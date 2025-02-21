@@ -27,8 +27,8 @@ import ca.uqac.friendschallenge.ui.theme.FriendsChallengeTheme
 
 @Composable
 fun LoginScreen(
-    onLoginButtonClicked: (Int) -> Unit,
-    onRegisterButtonClicked: (Int) -> Unit,
+    onLoginButtonClicked: () -> Unit,
+    onRegisterButtonClicked: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     var username by remember { mutableStateOf("") }
@@ -64,13 +64,13 @@ fun LoginScreen(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        Button(onClick = { onLoginButtonClicked(1) }) {
+        Button(onClick = { onLoginButtonClicked() }) {
             Text(text = stringResource(id = R.string.login_button))
         }
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        TextButton(onClick = { onRegisterButtonClicked(1) }) {
+        TextButton(onClick = { onRegisterButtonClicked() }) {
             Text(text = stringResource(id = R.string.register_prompt))
         }
     }
