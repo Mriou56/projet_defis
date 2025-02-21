@@ -1,4 +1,9 @@
 package ca.uqac.friendschallenge.ui
 
-class ProfileScreen {
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+
+@Composable
+fun ProfileScreen() {
+    Text("Profile Screen")
 }
