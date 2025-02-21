@@ -145,13 +145,13 @@ fun MainApp(
                 MainBottomBar(
                     currentScreen = currentScreen,
                     onHomeButtonClicked = {
-                        navigateWithClearingStack(navController, MainScreen.Home, currentScreen)
+                        navigateWithClearingStack(navController, MainScreen.Home)
                     },
                     onProfileButtonClicked = {
-                        navigateWithClearingStack(navController, MainScreen.Profile, currentScreen)
+                        navigateWithClearingStack(navController, MainScreen.Profile)
                     },
                     onFriendsButtonClicked = {
-                        navigateWithClearingStack(navController, MainScreen.Friends, currentScreen)
+                        navigateWithClearingStack(navController, MainScreen.Friends)
                     },
                 )
             }
@@ -167,7 +167,7 @@ fun MainApp(
             composable(route = MainScreen.Login.name){
                 LoginScreen(
                     onLoginButtonClicked = {
-                        navigateWithClearingStack(navController, MainScreen.Home, MainScreen.Login)
+                        navigateWithClearingStack(navController, MainScreen.Home)
                     },
                     onRegisterButtonClicked = {
                         navController.navigate(MainScreen.Register.name)
@@ -182,7 +182,7 @@ fun MainApp(
                         navController.navigate(MainScreen.Login.name)
                     },
                     onRegisterButtonClicked = {
-                        navigateWithClearingStack(navController, MainScreen.Home, MainScreen.Register)
+                        navigateWithClearingStack(navController, MainScreen.Home)
                     },
                     modifier = Modifier,
                 )
@@ -203,11 +203,12 @@ fun MainApp(
     }
 }
 
-private fun navigateWithClearingStack(navController: NavHostController, screenToNavigate: MainScreen, screenToPop: MainScreen? = null) {
+private fun navigateWithClearingStack(navController: NavHostController, screenToNavigate: MainScreen) {
     navController.navigate(screenToNavigate.name) {
-        // Permet de supprimer les écrans de la stack
-        popUpTo(screenToPop?.name ?: screenToNavigate.name) { inclusive = true }
-
+        // On clear le backstack
+        popUpTo(navController.graph.id) {
+            inclusive = true
+        }
     }
 }
 
