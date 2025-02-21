@@ -1,3 +1,23 @@
 <resources>
     <string name="app_name">Friends Challenge</string>
+
+    <!-- Navigation -->
+    <string name="back_button">Back</string>
+    <string name="home_button">Accueil</string>
+    <string name="profile_button">Profile</string>
+    <string name="friends_button">Amis</string>
+
+    <!-- Login Screen -->
+    <string name="login_title">Connexion</string>
+    <string name="username">Nom d\'utilisateur</string>
+    <string name="password">Mot de passe</string>
+    <string name="login_button">Se connecter</string>
+    <string name="register_prompt">Créer un compte</string>
+
+    <!-- Register Screen -->
+    <string name="register_title">Inscription</string>
+    <string name="email">Email</string>
+    <string name="confirm_password">Confirmer le mot de passe</string>
+    <string name="register_button">S\'inscrire</string>
+    <string name="login_prompt">Déjà un compte ? Se connecter</string>
 </resources>
