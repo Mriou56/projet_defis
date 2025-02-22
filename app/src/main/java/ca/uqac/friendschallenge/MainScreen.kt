@@ -189,7 +189,7 @@ fun MainApp(
             }
 
             composable(route = MainScreen.Home.name){
-                HomeScreen()
+                HomeScreen(modifier = Modifier)
             }
 
             composable(route = MainScreen.Profile.name){

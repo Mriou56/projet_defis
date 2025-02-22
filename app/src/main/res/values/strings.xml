@@ -20,4 +20,8 @@
     <string name="confirm_password">Confirmer le mot de passe</string>
     <string name="register_button">S\'inscrire</string>
     <string name="login_prompt">Déjà un compte ? Se connecter</string>
+
+    <!-- Home Screen -->
+    <string name="week_defi">Le défi de la semaine</string>
+    <string name="consigne">Les consignes du défi</string>
 </resources>
