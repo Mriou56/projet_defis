@@ -1,8 +1,10 @@
 package ca.uqac.friendschallenge
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Groups
@@ -18,8 +20,10 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -51,9 +55,23 @@ fun MainAppBar(
     modifier: Modifier = Modifier
 ) {
     TopAppBar(
-        title = { Text(stringResource(R.string.app_name)) },
+        title = {
+            Image(
+                painter = painterResource(R.drawable.logo),
+                contentDescription = "Logo of the app, two hands shaking below a cup",
+                modifier = Modifier
+                    .height(50.dp)
+                    .width(50.dp)
+            )
+            Text(
+                text = stringResource(R.string.app_name),
+                style = MaterialTheme.typography.headlineMedium,
+                modifier = Modifier
+                    .padding(horizontal = 50.dp, vertical = 8.dp)
+            )
+        },
         colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = MaterialTheme.colorScheme.primaryContainer,
+            containerColor = MaterialTheme.colorScheme.inversePrimary,
             titleContentColor = MaterialTheme.colorScheme.primary,
         ),
         modifier = modifier,
@@ -213,16 +231,16 @@ private fun navigateWithClearingStack(navController: NavHostController, screenTo
     }
 }
 
-@Preview
+@Preview()
 @Composable
-fun PreviewNavitgationBar() {
+fun PreviewMainApp() {
+    val navController = rememberNavController()
+
+    // Forcer la navigation vers Home pour la preview
+    LaunchedEffect(Unit) {
+        navigateWithClearingStack(navController, MainScreen.Home)
+    }
     FriendsChallengeTheme {
-        MainBottomBar(
-            currentScreen = MainScreen.Home,
-            onHomeButtonClicked = {},
-            onFriendsButtonClicked = {},
-            onProfileButtonClicked = {},
-            modifier = Modifier
-        )
+        MainApp(navController = navController)
     }
 }

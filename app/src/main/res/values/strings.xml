@@ -24,4 +24,8 @@
     <!-- Home Screen -->
     <string name="week_defi">Le défi de la semaine</string>
     <string name="consigne">Les consignes du défi</string>
+
+    <!-- Friends Screen -->
+    <string name="search_icon">Rechercher</string>
+
 </resources>
