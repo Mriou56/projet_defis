@@ -76,9 +76,10 @@ fun MainBottomBar(
     onHomeButtonClicked: () -> Unit,
     onFriendsButtonClicked: () -> Unit,
     onProfileButtonClicked: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
     NavigationBar(
-        modifier = Modifier.height(72.dp)
+        modifier = modifier.height(72.dp)
     ) {
         NavigationBarItem(
             icon = {
@@ -220,7 +221,8 @@ fun PreviewNavitgationBar() {
             currentScreen = MainScreen.Home,
             onHomeButtonClicked = {},
             onFriendsButtonClicked = {},
-            onProfileButtonClicked = {}
+            onProfileButtonClicked = {},
+            modifier = Modifier
         )
     }
 }
