@@ -41,9 +41,12 @@ import ca.uqac.friendschallenge.ui.theme.primaryLight
 
 import android.Manifest
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
+import androidx.compose.foundation.Image
 import androidx.compose.runtime.LaunchedEffect
 import androidx.core.content.ContextCompat
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.graphics.asImageBitmap
 import kotlinx.coroutines.launch
 
 @Composable
@@ -58,8 +61,11 @@ fun HomeScreen(modifier: Modifier = Modifier) {
         ) == PackageManager.PERMISSION_GRANTED
     }
 
-    val takePicture = rememberLauncherForActivityResult(ActivityResultContracts.TakePicturePreview()) { bitmap ->
-        // Do something with the bitmap
+    var bitmap by remember { mutableStateOf<Bitmap?>(null) }
+    val takePicture = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.TakePicturePreview()
+    ) { result: Bitmap? ->
+        bitmap = result
     }
 
     val requestPermissionLauncher = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) {
@@ -122,6 +128,10 @@ fun HomeScreen(modifier: Modifier = Modifier) {
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier.fillMaxWidth()
             ) {
+                bitmap?.let {
+                    Image(bitmap = it.asImageBitmap(), contentDescription = "Captured photo")
+                }
+
                 AddChallengeButton(
                     onClick = {
                         if (hasCameraPermission) {
