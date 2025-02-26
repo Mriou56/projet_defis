@@ -37,8 +37,11 @@ import ca.uqac.friendschallenge.R
 import ca.uqac.friendschallenge.ui.theme.FriendsChallengeTheme
 import ca.uqac.friendschallenge.ui.theme.primaryContainerLight
 
+
+
 @Composable
-fun FriendScreen(modifier: Modifier = Modifier) {
+fun FriendScreen(modifier: Modifier = Modifier,
+                 onWeekButtonClicked: () -> Unit = {}, ) {
     var searchQuery by remember { mutableStateOf("") }
 
     Column(
@@ -97,7 +100,7 @@ fun FriendScreen(modifier: Modifier = Modifier) {
 
         Spacer(modifier = Modifier.weight(1f))
         Button(
-            onClick = {},
+            onClick = {onWeekButtonClicked() },
             modifier = Modifier.align(Alignment.End)
         ) {
             Text("Semaine précédente")
@@ -105,10 +108,12 @@ fun FriendScreen(modifier: Modifier = Modifier) {
     }
 }
 
+
+
 @Composable
 @Preview
 fun FriendScreenPreview() {
     FriendsChallengeTheme {
-        FriendScreen()
+        FriendScreen(onWeekButtonClicked = {})
     }
 }

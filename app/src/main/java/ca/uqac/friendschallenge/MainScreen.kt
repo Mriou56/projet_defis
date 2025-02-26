@@ -34,6 +34,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import ca.uqac.friendschallenge.ui.FriendScreen
 import ca.uqac.friendschallenge.ui.HomeScreen
+import ca.uqac.friendschallenge.ui.LeaderboardScreen
 import ca.uqac.friendschallenge.ui.LoginScreen
 import ca.uqac.friendschallenge.ui.ProfileScreen
 import ca.uqac.friendschallenge.ui.RegisterScreen
@@ -44,7 +45,8 @@ enum class MainScreen() {
     Register,
     Home,
     Profile,
-    Friends
+    Friends,
+    Leaderboard,
 }
 
 @Composable
@@ -216,7 +218,13 @@ fun MainApp(
             }
 
             composable(route = MainScreen.Friends.name){
-                FriendScreen()
+                FriendScreen(onWeekButtonClicked = {
+                    navigateWithClearingStack(navController, MainScreen.Leaderboard)
+                })
+            }
+
+            composable (route = MainScreen.Leaderboard.name){
+                LeaderboardScreen()
             }
         }
     }
@@ -224,7 +232,6 @@ fun MainApp(
 
 private fun navigateWithClearingStack(navController: NavHostController, screenToNavigate: MainScreen) {
     navController.navigate(screenToNavigate.name) {
-        // On clear le backstack
         popUpTo(navController.graph.id) {
             inclusive = true
         }
