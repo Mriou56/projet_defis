@@ -1,5 +1,7 @@
 package ca.uqac.friendschallenge.ui
 
+import android.annotation.SuppressLint
+import android.content.Intent
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -28,6 +30,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.core.app.ActivityCompat.startActivityForResult
+import androidx.core.content.ContextCompat.startActivity
 import ca.uqac.friendschallenge.R
 import ca.uqac.friendschallenge.data.allDefi
 import ca.uqac.friendschallenge.ui.theme.inversePrimaryLight
@@ -35,8 +39,37 @@ import ca.uqac.friendschallenge.ui.theme.onPrimaryLight
 import ca.uqac.friendschallenge.ui.theme.primaryContainerLight
 import ca.uqac.friendschallenge.ui.theme.primaryLight
 
+import android.Manifest
+import android.content.pm.PackageManager
+import androidx.compose.runtime.LaunchedEffect
+import androidx.core.content.ContextCompat
+import androidx.compose.runtime.rememberCoroutineScope
+import kotlinx.coroutines.launch
+
 @Composable
 fun HomeScreen(modifier: Modifier = Modifier) {
+    val context = LocalContext.current
+    val scope = rememberCoroutineScope()
+    var hasCameraPermission by remember { mutableStateOf(false) }
+
+    LaunchedEffect(Unit) {
+        hasCameraPermission = ContextCompat.checkSelfPermission(
+            context, Manifest.permission.CAMERA
+        ) == PackageManager.PERMISSION_GRANTED
+    }
+
+    val takePicture = rememberLauncherForActivityResult(ActivityResultContracts.TakePicturePreview()) { bitmap ->
+        // Do something with the bitmap
+    }
+
+    val requestPermissionLauncher = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) {
+        isGranted: Boolean -> hasCameraPermission = isGranted
+
+        if (isGranted) {
+            takePicture.launch(null)
+        }
+    }
+
     val defi = allDefi.random()
 
     Box(
@@ -90,7 +123,15 @@ fun HomeScreen(modifier: Modifier = Modifier) {
                 modifier = Modifier.fillMaxWidth()
             ) {
                 AddChallengeButton(
-                    onClick = {},
+                    onClick = {
+                        if (hasCameraPermission) {
+                            takePicture.launch(null)
+                        } else {
+                            scope.launch {
+                                requestPermissionLauncher.launch(Manifest.permission.CAMERA)
+                            }
+                        }
+                    },
                 )
             }
         }

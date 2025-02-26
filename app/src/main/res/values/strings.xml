@@ -30,4 +30,5 @@
 
     <!-- Profile Screen -->
     <string name="profile_name">No name</string>
+    <string name="profile_picture">Vos derniers défis</string>
 </resources>
