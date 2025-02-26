@@ -28,6 +28,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -37,8 +38,10 @@ import ca.uqac.friendschallenge.MainBottomBar
 import ca.uqac.friendschallenge.MainScreen
 import ca.uqac.friendschallenge.R
 import ca.uqac.friendschallenge.ui.theme.inversePrimaryLight
+import ca.uqac.friendschallenge.ui.theme.onPrimaryDark
 import ca.uqac.friendschallenge.ui.theme.onPrimaryLight
 import ca.uqac.friendschallenge.ui.theme.primaryContainerLight
+import ca.uqac.friendschallenge.ui.theme.primaryDark
 import ca.uqac.friendschallenge.ui.theme.primaryLight
 import ca.uqac.friendschallenge.ui.theme.tertiaryLight
 import coil.compose.rememberAsyncImagePainter
@@ -58,7 +61,11 @@ fun ProfileScreen(modifier: Modifier = Modifier) {
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
 
-            Row() {
+            Row(
+                modifier = Modifier
+                .background(primaryLight)
+                    .fillMaxWidth()
+            ) {
                 Image(
                     painter = painterResource(R.drawable.profile),
                     contentDescription = "profile picture",
@@ -70,13 +77,20 @@ fun ProfileScreen(modifier: Modifier = Modifier) {
                     text = stringResource(R.string.profile_name),
                     style = MaterialTheme.typography.labelMedium,
                     modifier = Modifier
-                        .padding(horizontal = 20.dp, vertical = 10.dp)
+                        .padding(horizontal = 20.dp, vertical = 20.dp)
                 )
             }
 
             Spacer(modifier = Modifier.height(150.dp))
 
-            Box(){
+            Column() {
+                    Text(
+                        text = stringResource(R.string.profile_picture),
+                        style = MaterialTheme.typography.headlineLarge,
+                        modifier = Modifier
+                            .padding(vertical = 8.dp, horizontal = 16.dp)
+                    )
+
                     PictureGrid()
                 }
             }
@@ -104,6 +118,7 @@ fun PictureGrid(modifier: Modifier = Modifier) {
             Image(
                 painter = painterResource(image),
                 contentDescription = null,
+                contentScale = ContentScale.Crop,
                 modifier = Modifier
                     .size(100.dp)
                     .clip(RoundedCornerShape(8.dp))
