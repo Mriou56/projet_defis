@@ -28,4 +28,6 @@
     <!-- Friends Screen -->
     <string name="search_icon">Rechercher</string>
 
+    <!-- Profile Screen -->
+    <string name="profile_name">No name</string>
 </resources>
