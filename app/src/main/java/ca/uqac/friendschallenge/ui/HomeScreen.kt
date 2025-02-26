@@ -1,5 +1,8 @@
 package ca.uqac.friendschallenge.ui
 
+import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -15,12 +18,18 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import ca.uqac.friendschallenge.R
+import ca.uqac.friendschallenge.data.allDefi
 import ca.uqac.friendschallenge.ui.theme.inversePrimaryLight
 import ca.uqac.friendschallenge.ui.theme.onPrimaryLight
 import ca.uqac.friendschallenge.ui.theme.primaryContainerLight
@@ -28,6 +37,7 @@ import ca.uqac.friendschallenge.ui.theme.primaryLight
 
 @Composable
 fun HomeScreen(modifier: Modifier = Modifier) {
+    val defi = allDefi.random()
 
     Box(
         modifier = modifier
@@ -67,7 +77,7 @@ fun HomeScreen(modifier: Modifier = Modifier) {
                         modifier = Modifier.padding(bottom = 4.dp)
                     )
                     Text(
-                        text = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus molestie sed quam sit amet euismod. Aliquam nisl dolor, iaculis et egestas ut, ultrices quis quam.",
+                        text = defi,
                         style = MaterialTheme.typography.bodyMedium
                     )
                 }
@@ -105,6 +115,7 @@ fun AddChallengeButton(onClick: () -> Unit, modifier: Modifier = Modifier) {
         )
     }
 }
+
 
 @Composable
 @Preview
