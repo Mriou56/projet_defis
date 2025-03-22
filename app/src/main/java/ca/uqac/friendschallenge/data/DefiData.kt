@@ -12,4 +12,6 @@ val allDefi: Set<String> =
         "Fais une photo de ton animal de compagnie",
         "Apprendre une phrase entière dans une nouvelle langue",
         "Dessiner un autoportrait sans lever le crayon.",
+        "Fais une photo de ton repas",
+
     )

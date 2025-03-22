@@ -126,10 +126,15 @@ fun HomeScreen(modifier: Modifier = Modifier) {
 
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier
             ) {
-                bitmap?.let {
-                    Image(bitmap = it.asImageBitmap(), contentDescription = "Captured photo")
+                Column(modifier= Modifier.padding(bottom = 30.dp)) {
+                    bitmap?.let {
+                        Image(bitmap = it.asImageBitmap(), contentDescription = "Captured photo",
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(bottom = 16.dp))
+                    }
                 }
 
                 AddChallengeButton(

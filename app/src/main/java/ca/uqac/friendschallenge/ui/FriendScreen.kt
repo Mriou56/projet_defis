@@ -42,7 +42,7 @@ import ca.uqac.friendschallenge.ui.theme.primaryContainerLight
 @Composable
 fun FriendScreen(modifier: Modifier = Modifier,
                  onWeekButtonClicked: () -> Unit = {}, ) {
-    var searchQuery by remember { mutableStateOf("") }
+    var searchQuery by remember { mutableStateOf("Chercher des amis") }
 
     Column(
         modifier = modifier

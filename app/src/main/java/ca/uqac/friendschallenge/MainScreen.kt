@@ -32,13 +32,16 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import ca.uqac.friendschallenge.data.isWeekend
 import ca.uqac.friendschallenge.ui.FriendScreen
 import ca.uqac.friendschallenge.ui.HomeScreen
 import ca.uqac.friendschallenge.ui.LeaderboardScreen
 import ca.uqac.friendschallenge.ui.LoginScreen
 import ca.uqac.friendschallenge.ui.ProfileScreen
 import ca.uqac.friendschallenge.ui.RegisterScreen
+import ca.uqac.friendschallenge.ui.VoteScreen
 import ca.uqac.friendschallenge.ui.theme.FriendsChallengeTheme
+
 
 enum class MainScreen() {
     Login,
@@ -47,6 +50,15 @@ enum class MainScreen() {
     Profile,
     Friends,
     Leaderboard,
+    Vote,
+}
+
+fun selectMode(): MainScreen {
+    if(isWeekend()) {
+        return MainScreen.Vote
+    }else{
+        return MainScreen.Home
+    }
 }
 
 @Composable
@@ -166,7 +178,8 @@ fun MainApp(
                 MainBottomBar(
                     currentScreen = currentScreen,
                     onHomeButtonClicked = {
-                        navigateWithClearingStack(navController, MainScreen.Home)
+                        navigateWithClearingStack(navController, selectMode())
+
                     },
                     onProfileButtonClicked = {
                         navigateWithClearingStack(navController, MainScreen.Profile)
@@ -188,7 +201,7 @@ fun MainApp(
             composable(route = MainScreen.Login.name){
                 LoginScreen(
                     onLoginButtonClicked = {
-                        navigateWithClearingStack(navController, MainScreen.Home)
+                        navigateWithClearingStack(navController, selectMode())
                     },
                     onRegisterButtonClicked = {
                         navController.navigate(MainScreen.Register.name)
@@ -203,7 +216,7 @@ fun MainApp(
                         navController.navigate(MainScreen.Login.name)
                     },
                     onRegisterButtonClicked = {
-                        navigateWithClearingStack(navController, MainScreen.Home)
+                        navigateWithClearingStack(navController, selectMode())
                     },
                     modifier = Modifier,
                 )
@@ -225,6 +238,10 @@ fun MainApp(
 
             composable (route = MainScreen.Leaderboard.name){
                 LeaderboardScreen()
+            }
+
+            composable(route = MainScreen.Vote.name){
+                VoteScreen()
             }
         }
     }
