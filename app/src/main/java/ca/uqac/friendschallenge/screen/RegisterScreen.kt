@@ -1,4 +1,4 @@
-package ca.uqac.friendschallenge.ui
+package ca.uqac.friendschallenge.screen
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -8,17 +8,20 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -26,17 +29,20 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import ca.uqac.friendschallenge.R
 import ca.uqac.friendschallenge.ui.theme.FriendsChallengeTheme
+import ca.uqac.friendschallenge.utils.ToastUtils
 
 @Composable
 fun RegisterScreen(
+    modifier: Modifier = Modifier,
     onLoginButtonClicked: () -> Unit,
-    onRegisterButtonClicked: () -> Unit,
-    modifier: Modifier = Modifier
+    onRegisterButtonClicked: (email: String, password: String, username: String) -> Unit,
+    isRegisterLoading: Boolean = false,
 ) {
     var username by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var confirmPassword by remember { mutableStateOf("") }
+    val context = LocalContext.current
 
     Column(
         modifier = modifier
@@ -88,13 +94,32 @@ fun RegisterScreen(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        Button(onClick = { onRegisterButtonClicked() }) {
-            Text(text = stringResource(id = R.string.register_button))
+        Button(
+            onClick = {
+                if (password == confirmPassword){
+                    onRegisterButtonClicked(email, password, username)
+                } else {
+                    ToastUtils.show(context, "Les mots de passe ne correspondent pas")
+                }
+            },
+            enabled = !isRegisterLoading
+        ) {
+            if (isRegisterLoading) {
+                CircularProgressIndicator(
+                    color = MaterialTheme.colorScheme.onPrimary,
+                    modifier = Modifier.size(24.dp)
+                )
+            } else {
+                Text(text = stringResource(id = R.string.register_button))
+            }
         }
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        TextButton(onClick = { onLoginButtonClicked() }) {
+        TextButton(
+            onClick = { onLoginButtonClicked() },
+            enabled = !isRegisterLoading
+        ) {
             Text(text = stringResource(id = R.string.login_prompt))
         }
     }
@@ -105,6 +130,6 @@ fun RegisterScreen(
 @Composable
 fun PreviewRegisterScreen() {
     FriendsChallengeTheme {
-        RegisterScreen(onLoginButtonClicked = {}, onRegisterButtonClicked = {})
+        RegisterScreen(onLoginButtonClicked = {}, onRegisterButtonClicked = {_, _, _ -> })
     }
 }

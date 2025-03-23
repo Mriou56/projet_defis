@@ -1,9 +1,7 @@
-package ca.uqac.friendschallenge.ui
+package ca.uqac.friendschallenge.screen
 
-import android.content.Context
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -15,40 +13,37 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Logout
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import ca.uqac.friendschallenge.MainBottomBar
-import ca.uqac.friendschallenge.MainScreen
 import ca.uqac.friendschallenge.R
-import ca.uqac.friendschallenge.ui.theme.inversePrimaryLight
-import ca.uqac.friendschallenge.ui.theme.onPrimaryDark
-import ca.uqac.friendschallenge.ui.theme.onPrimaryLight
+import ca.uqac.friendschallenge.model.UserModel
+import ca.uqac.friendschallenge.ui.theme.FriendsChallengeTheme
 import ca.uqac.friendschallenge.ui.theme.primaryContainerLight
-import ca.uqac.friendschallenge.ui.theme.primaryDark
-import ca.uqac.friendschallenge.ui.theme.primaryLight
+import ca.uqac.friendschallenge.ui.theme.secondaryLight
 import ca.uqac.friendschallenge.ui.theme.tertiaryLight
-import coil.compose.rememberAsyncImagePainter
-import java.io.File
 
 @Composable
-fun ProfileScreen(modifier: Modifier = Modifier) {
+fun ProfileScreen(
+    modifier: Modifier = Modifier,
+    onLogoutButtonClicked: () -> Unit = {},
+    userModel: UserModel,
+) {
     Box(
         modifier = modifier
             .background(primaryContainerLight)
@@ -57,13 +52,12 @@ fun ProfileScreen(modifier: Modifier = Modifier) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(top = 72.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+                .padding(top = 35.dp, end = 16.dp, start = 16.dp),
         ) {
 
             Row(
                 modifier = Modifier
-                .background(primaryLight)
+                    .padding(bottom = 16.dp)
                     .fillMaxWidth()
             ) {
                 Image(
@@ -74,12 +68,29 @@ fun ProfileScreen(modifier: Modifier = Modifier) {
                         .width(60.dp)
                 )
                 Text(
-                    text = stringResource(R.string.profile_name),
-                    style = MaterialTheme.typography.labelMedium,
+                    text = userModel.username,
                     modifier = Modifier
-                        .padding(horizontal = 20.dp, vertical = 20.dp)
+                        .padding(16.dp)
+                        .align(Alignment.CenterVertically)
                 )
+                Spacer(modifier = Modifier.weight(1f))
+                Button(
+                    onClick = onLogoutButtonClicked,
+                    modifier = Modifier.align(Alignment.CenterVertically),
+                ) {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.Logout,
+                        contentDescription = "logout",
+                    )
+                }
             }
+
+            Spacer(
+                modifier = Modifier
+                    .background(secondaryLight)
+                    .fillMaxWidth()
+                    .height(1.dp)
+            )
 
             Spacer(modifier = Modifier.height(150.dp))
 
@@ -101,7 +112,7 @@ fun ProfileScreen(modifier: Modifier = Modifier) {
     }
 
 @Composable
-fun PictureGrid(modifier: Modifier = Modifier) {
+fun PictureGrid() {
     val images = listOf(
         R.drawable.erable,
         R.drawable.fleurs,
@@ -121,6 +132,7 @@ fun PictureGrid(modifier: Modifier = Modifier) {
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
                     .size(100.dp)
+                    .padding(2.dp)
                     .clip(RoundedCornerShape(8.dp))
                     .background(tertiaryLight)
             )
@@ -131,5 +143,10 @@ fun PictureGrid(modifier: Modifier = Modifier) {
 @Preview
 @Composable
 fun PreviewProfileScreen() {
-    ProfileScreen()
+    FriendsChallengeTheme {
+        ProfileScreen(
+            userModel = UserModel("uid", "username", "email"),
+            onLogoutButtonClicked = {}
+        )
+    }
 }
