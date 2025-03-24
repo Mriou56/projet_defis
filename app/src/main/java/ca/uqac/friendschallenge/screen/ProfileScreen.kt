@@ -19,6 +19,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Logout
 import androidx.compose.material3.Button
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -35,7 +36,6 @@ import ca.uqac.friendschallenge.R
 import ca.uqac.friendschallenge.model.UserModel
 import ca.uqac.friendschallenge.ui.theme.FriendsChallengeTheme
 import ca.uqac.friendschallenge.ui.theme.primaryContainerLight
-import ca.uqac.friendschallenge.ui.theme.secondaryLight
 import ca.uqac.friendschallenge.ui.theme.tertiaryLight
 
 @Composable
@@ -85,12 +85,7 @@ fun ProfileScreen(
                 }
             }
 
-            Spacer(
-                modifier = Modifier
-                    .background(secondaryLight)
-                    .fillMaxWidth()
-                    .height(1.dp)
-            )
+            HorizontalDivider()
 
             Spacer(modifier = Modifier.height(150.dp))
 

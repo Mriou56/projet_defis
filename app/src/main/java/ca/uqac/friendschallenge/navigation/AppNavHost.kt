@@ -48,7 +48,8 @@ fun AppNavHost(
         }
         composable(route = AppScreen.Friends.name) {
             FriendScreen(
-                onWeekButtonClicked = { navController.navigateAndClearStack(AppScreen.Leaderboard) }
+                currentUser = authState.userModel ?: error("User not found"),
+                onWeekButtonClicked = { navController.navigate(AppScreen.Leaderboard.name) }
             )
         }
         composable(route = AppScreen.Leaderboard.name) { LeaderboardScreen() }
