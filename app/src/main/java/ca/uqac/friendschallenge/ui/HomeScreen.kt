@@ -89,14 +89,7 @@ fun HomeScreen(modifier: Modifier = Modifier) {
                 .padding(bottom = 72.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(inversePrimaryLight)
-            ) {
 
-            }
 
             Text(
                 text = stringResource(R.string.week_defi),

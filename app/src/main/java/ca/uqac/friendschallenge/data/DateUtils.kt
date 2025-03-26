@@ -1,7 +1,5 @@
 package ca.uqac.friendschallenge.data
 
-import ca.uqac.friendschallenge.MainScreen
-import ca.uqac.friendschallenge.navigateWithClearingStack
 import java.util.Calendar
 
 fun isWeekend(): Boolean {
