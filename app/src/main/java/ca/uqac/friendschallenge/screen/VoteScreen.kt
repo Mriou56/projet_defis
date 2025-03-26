@@ -1,4 +1,4 @@
-package ca.uqac.friendschallenge.ui
+package ca.uqac.friendschallenge.screen
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background

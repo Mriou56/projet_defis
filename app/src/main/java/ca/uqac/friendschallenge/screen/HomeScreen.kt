@@ -1,8 +1,5 @@
-package ca.uqac.friendschallenge.ui
+package ca.uqac.friendschallenge.screen
 
-import android.annotation.SuppressLint
-import android.content.Intent
-import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
@@ -30,8 +27,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.core.app.ActivityCompat.startActivityForResult
-import androidx.core.content.ContextCompat.startActivity
 import ca.uqac.friendschallenge.R
 import ca.uqac.friendschallenge.data.allDefi
 import ca.uqac.friendschallenge.ui.theme.inversePrimaryLight

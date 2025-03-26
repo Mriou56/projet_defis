@@ -1,4 +1,4 @@
-package ca.uqac.friendschallenge.ui
+package ca.uqac.friendschallenge.screen
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -6,10 +6,12 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -27,9 +29,10 @@ import ca.uqac.friendschallenge.ui.theme.FriendsChallengeTheme
 
 @Composable
 fun LoginScreen(
-    onLoginButtonClicked: () -> Unit,
+    modifier: Modifier = Modifier,
+    onLoginButtonClicked: (email: String, password: String) -> Unit,
     onRegisterButtonClicked: () -> Unit,
-    modifier: Modifier = Modifier
+    isLoginLoading: Boolean = false,
 ) {
     var username by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
@@ -64,13 +67,26 @@ fun LoginScreen(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        Button(onClick = { onLoginButtonClicked() }) {
-            Text(text = stringResource(id = R.string.login_button))
+        Button(
+            onClick = { onLoginButtonClicked(username, password) },
+            enabled = !isLoginLoading
+        ) {
+            if (isLoginLoading) {
+                CircularProgressIndicator(
+                    color = MaterialTheme.colorScheme.onPrimary,
+                    modifier = Modifier.size(24.dp)
+                )
+            } else {
+                Text(text = stringResource(id = R.string.login_button))
+            }
         }
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        TextButton(onClick = { onRegisterButtonClicked() }) {
+        TextButton(
+            onClick = { onRegisterButtonClicked() },
+            enabled = !isLoginLoading
+        ) {
             Text(text = stringResource(id = R.string.register_prompt))
         }
     }
@@ -81,6 +97,6 @@ fun LoginScreen(
 @Composable
 fun PreviewLoginScreen() {
     FriendsChallengeTheme {
-        LoginScreen(onLoginButtonClicked = {}, onRegisterButtonClicked = {})
+        LoginScreen(onLoginButtonClicked = { _, _ -> }, onRegisterButtonClicked = {}, isLoginLoading = true)
     }
 }

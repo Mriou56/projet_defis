@@ -1,4 +1,4 @@
-package ca.uqac.friendschallenge.data
+package ca.uqac.friendschallenge.utils
 
 import java.util.Calendar
 
