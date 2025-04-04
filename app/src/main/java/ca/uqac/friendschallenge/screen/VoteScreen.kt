@@ -3,6 +3,7 @@ package ca.uqac.friendschallenge.screen
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -17,6 +18,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -41,18 +43,16 @@ fun VoteScreen(modifier: Modifier = Modifier, viewModel: DefiViewModel = remembe
     val isLoading = viewModel.isLoading
     val errorMessage = viewModel.errorMessage
 
+    LaunchedEffect(Unit) {
+        viewModel.fetchWeeklyDefi()
+    }
+
     Column(
         modifier = modifier
-            .fillMaxSize(),
+            .fillMaxSize()
+            .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        Row(
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            modifier = Modifier
-                .fillMaxWidth()
-        ) {
-
-        }
         when {
             isLoading ->
                 Text("Chargement...",
@@ -78,17 +78,16 @@ fun VoteScreen(modifier: Modifier = Modifier, viewModel: DefiViewModel = remembe
                     )
                     .padding(8.dp)
             )
-            else -> Text(
-                "Aucun défi trouvé.",
-                style = MaterialTheme.typography.headlineMedium,
+            else -> Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .wrapContentWidth(Alignment.CenterHorizontally)
+                    .padding(horizontal = 16.dp)
                     .background(
                         color = inversePrimaryLight,
                         shape = androidx.compose.foundation.shape.RoundedCornerShape(8.dp)
                     )
-                    .padding(8.dp))
+                    .padding(40.dp)
+            )
         }
 
         Text(

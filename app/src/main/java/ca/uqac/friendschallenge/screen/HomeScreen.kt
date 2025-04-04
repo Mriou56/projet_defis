@@ -75,8 +75,6 @@ fun HomeScreen(modifier: Modifier = Modifier, viewModel: DefiViewModel = remembe
         }
     }
 
-    val defi = allDefi.random()
-
     Box(
         modifier = modifier
             .fillMaxSize()
