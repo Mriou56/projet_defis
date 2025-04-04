@@ -15,12 +15,16 @@ class AuthViewModel : ViewModel() {
     private val _authState = MutableStateFlow(AuthState())
     val authState: StateFlow<AuthState> get() = _authState
 
+    private val _isLoading = MutableStateFlow(true)
+    val isLoading: StateFlow<Boolean> get() = _isLoading
+
     init {
         checkAuthStatus()
     }
 
     private fun checkAuthStatus() {
         firebaseHelper.checkAuthStatus { userId ->
+            _isLoading.value = false
             if (userId == null) {
                 _authState.update { it.copy(isAuthenticated = false) }
             } else {

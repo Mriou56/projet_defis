@@ -11,22 +11,28 @@ import androidx.navigation.compose.rememberNavController
 import ca.uqac.friendschallenge.components.BottomNavigationBar
 import ca.uqac.friendschallenge.components.TopBar
 import ca.uqac.friendschallenge.viewmodel.AuthViewModel
+import ca.uqac.friendschallenge.viewmodel.HomeScreenViewModel
 
 @Composable
-fun AppNavigation(authViewModel: AuthViewModel = viewModel()) {
+fun AppNavigation(authViewModel: AuthViewModel = viewModel(), homeViewModel: HomeScreenViewModel = viewModel()) {
     val navController = rememberNavController()
     val backStackEntry by navController.currentBackStackEntryAsState()
     val authState by authViewModel.authState.collectAsState()
+    val authIsLoading by authViewModel.isLoading.collectAsState()
+
+    val isTimeToVote by homeViewModel.isTimeToVote.collectAsState()
+    val homeIsLoading by homeViewModel.isLoading.collectAsState()
+
     val context = LocalContext.current
 
     val currentScreen = AppScreen.fromRoute(backStackEntry?.destination?.route)
 
-    HandleAuthNavigation(authState.isAuthenticated, navController)
+    HandleNavigation(authState.isAuthenticated, authIsLoading, isTimeToVote, homeIsLoading, navController)
     HandleAuthErrors(authState.errorMessage, context)
 
     Scaffold(
         topBar = {
-            if (shouldShowNavigationBars(currentScreen)) {
+            if (shouldShowNavigationBars(currentScreen, authState.isAuthenticated)) {
                 TopBar(
                     canNavigateBack = navController.previousBackStackEntry != null,
                     navigateUp = { navController.navigateUp() }
@@ -34,10 +40,20 @@ fun AppNavigation(authViewModel: AuthViewModel = viewModel()) {
             }
         },
         bottomBar = {
-            if (shouldShowNavigationBars(currentScreen)) {
+            if (shouldShowNavigationBars(currentScreen, authState.isAuthenticated)) {
                 BottomNavigationBar(
                     currentScreen = currentScreen,
-                    onHomeButtonClicked = { navController.navigateAndClearStack(AppScreen.Home) },
+                    onHomeButtonClicked = {
+                        homeViewModel.checkIfTimeToVote()
+                        // Lecture avec .value permet ici de lire immédiatement la valeur et ne pas attendre la propagation
+                        if (homeViewModel.isLoading.value) {
+                            navController.navigateAndClearStack(AppScreen.Progress)
+                        } else if (isTimeToVote) {
+                            navController.navigateAndClearStack(AppScreen.Vote)
+                        } else {
+                            navController.navigateAndClearStack(AppScreen.Home)
+                        }
+                    },
                     onProfileButtonClicked = { navController.navigateAndClearStack(AppScreen.Profile) },
                     onFriendsButtonClicked = { navController.navigateAndClearStack(AppScreen.Friends) }
                 )

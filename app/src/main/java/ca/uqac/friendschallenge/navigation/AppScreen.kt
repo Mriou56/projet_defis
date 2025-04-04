@@ -7,6 +7,7 @@ enum class AppScreen {
     Profile,
     Friends,
     Leaderboard,
+    Progress,
     Vote;
 
     companion object {
