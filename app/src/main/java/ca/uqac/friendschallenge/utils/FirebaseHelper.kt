@@ -137,10 +137,24 @@ class FirebaseHelper() {
         }
     }
 
+    fun isTimeToVote(callback: (Boolean) -> Unit) {
+        firestore.collection("appsettings").document("settings")
+            .get()
+            .addOnSuccessListener { document ->
+                val data = document.data
+                val isTimeToVote = data?.getBoolean("isTimeToVote") ?: false
+
+                callback(isTimeToVote)
+            }.addOnFailureListener {
+                callback(false)
+            }
+    }
 
     private fun Map<String, Any?>.getString(key: String): String? = this[key] as? String
 
     private fun Map<String, Any?>.getTimestamp(key: String): Timestamp? = this[key] as? Timestamp
+
+    private fun Map<String, Any?>.getBoolean(key: String): Boolean? = this[key] as? Boolean
 
     private fun com.google.firebase.firestore.QueryDocumentSnapshot.toUserModel(): UserModel? {
         val data = data

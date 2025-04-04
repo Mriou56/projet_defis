@@ -18,7 +18,7 @@ fun AppNavHost(
 ) {
     NavHost(
         navController = navController,
-        startDestination = AppScreen.Login.name,
+        startDestination = AppScreen.Progress.name,
         modifier = modifier
     ) {
         composable(route = AppScreen.Login.name) {
@@ -37,7 +37,9 @@ fun AppNavHost(
                 isRegisterLoading = authState.isLoading
             )
         }
-        composable(route = AppScreen.Home.name) { HomeScreen() }
+        composable(route = AppScreen.Home.name) {
+            HomeScreen()
+        }
         composable(route = AppScreen.Profile.name) {
             authState.userModel?.let { user ->
                 ProfileScreen(
@@ -52,7 +54,14 @@ fun AppNavHost(
                 onWeekButtonClicked = { navController.navigate(AppScreen.Leaderboard.name) }
             )
         }
-        composable(route = AppScreen.Leaderboard.name) { LeaderboardScreen() }
-        composable(route = AppScreen.Vote.name) { VoteScreen() }
+        composable(route = AppScreen.Leaderboard.name) {
+            LeaderboardScreen()
+        }
+        composable(route = AppScreen.Vote.name) {
+            VoteScreen()
+        }
+        composable(route = AppScreen.Progress.name) {
+            ProgressScreen()
+        }
     }
 }

@@ -60,6 +60,10 @@ class FriendScreenViewModel : ViewModel() {
         if (query.length > 2 && System.currentTimeMillis() - lastSearchTime > 500) {
             performSearch(currentUser)
         }
+
+        if (query.isEmpty()) {
+            _searchResults.value = emptyList()
+        }
     }
 
     private fun performSearch(currentUser: UserModel) {

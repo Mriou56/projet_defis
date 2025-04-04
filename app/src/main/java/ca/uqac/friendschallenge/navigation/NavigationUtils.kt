@@ -8,6 +8,10 @@ fun NavHostController.navigateAndClearStack(targetScreen: AppScreen) {
     }
 }
 
-fun shouldShowNavigationBars(screen: AppScreen): Boolean {
-    return screen != AppScreen.Login && screen != AppScreen.Register
+fun shouldShowNavigationBars(screen: AppScreen, isAuthenticated: Boolean): Boolean {
+    return when (screen) {
+        AppScreen.Login, AppScreen.Register -> false
+        AppScreen.Progress -> isAuthenticated
+        else -> true
+    }
 }
