@@ -41,18 +41,23 @@ import androidx.core.content.ContextCompat
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.graphics.asImageBitmap
 import ca.uqac.friendschallenge.ui.theme.FriendsChallengeTheme
+import ca.uqac.friendschallenge.viewmodel.DefiViewModel
 import kotlinx.coroutines.launch
 
 @Composable
-fun HomeScreen(modifier: Modifier = Modifier) {
+fun HomeScreen(modifier: Modifier = Modifier, viewModel: DefiViewModel = remember { DefiViewModel() }) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     var hasCameraPermission by remember { mutableStateOf(false) }
+    val weeklyDefi = viewModel.weeklyDefi
+    val isLoading = viewModel.isLoading
+    val errorMessage = viewModel.errorMessage
 
     LaunchedEffect(Unit) {
         hasCameraPermission = ContextCompat.checkSelfPermission(
             context, Manifest.permission.CAMERA
         ) == PackageManager.PERMISSION_GRANTED
+        viewModel.fetchWeeklyDefi()
     }
 
     var bitmap by remember { mutableStateOf<Bitmap?>(null) }
@@ -101,10 +106,15 @@ fun HomeScreen(modifier: Modifier = Modifier) {
                         style = MaterialTheme.typography.headlineSmall,
                         modifier = Modifier.padding(bottom = 4.dp)
                     )
-                    Text(
-                        text = defi,
-                        style = MaterialTheme.typography.bodyMedium
-                    )
+                    when {
+                        isLoading -> Text("Chargement...")
+                        errorMessage != null -> Text("Erreur : $errorMessage")
+                        weeklyDefi != null -> Text(
+                            text = weeklyDefi.consigne,
+                            style = MaterialTheme.typography.bodyMedium
+                        )
+                        else -> Text("Aucun défi trouvé.")
+                    }
                 }
             }
 

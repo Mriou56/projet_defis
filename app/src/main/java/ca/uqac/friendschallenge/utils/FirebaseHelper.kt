@@ -150,6 +150,30 @@ class FirebaseHelper() {
             }
     }
 
+
+    fun getWeeklyDefi(callback: (Result<Pair<String, String>>) -> Unit) {
+        firestore.collection("Defis")
+            .get(com.google.firebase.firestore.Source.SERVER)
+            .addOnSuccessListener { querySnapshot ->
+                val weeklyDefi = querySnapshot.documents.firstOrNull { document ->
+                    document.getString("realise") == "WEEKLY"
+                }
+
+                if (weeklyDefi != null) {
+                    val defiId = weeklyDefi.id
+                    val consigne = weeklyDefi.getString("consigne") ?: "Consigne introuvable"
+
+                    callback(Result.success(Pair(defiId, consigne)))
+                } else {
+                    callback(Result.failure(Exception("Weekly challenge not found")))
+                }
+            }
+            .addOnFailureListener { exception ->
+                callback(Result.failure(exception))
+            }
+    }
+
+
     private fun Map<String, Any?>.getString(key: String): String? = this[key] as? String
 
     private fun Map<String, Any?>.getTimestamp(key: String): Timestamp? = this[key] as? Timestamp

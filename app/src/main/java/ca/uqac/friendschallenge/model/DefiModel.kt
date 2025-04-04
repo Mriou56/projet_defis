@@ -5,11 +5,11 @@ import androidx.compose.runtime.State
 data class DefiModel (
     val id: String,
     val consigne: String,
-    val realise: Boolean,
+    val realise: String,
 )
 
 enum class DefiStatus {
-    WEEK,
+    WEEKLY,
     DID,
-    NOT_DID,
+    NO,
 }
