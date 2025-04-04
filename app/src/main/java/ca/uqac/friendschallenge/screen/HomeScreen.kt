@@ -2,7 +2,6 @@ package ca.uqac.friendschallenge.screen
 
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -12,7 +11,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -27,10 +25,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import ca.uqac.friendschallenge.R
-import ca.uqac.friendschallenge.data.allDefi
-import ca.uqac.friendschallenge.ui.theme.onPrimaryLight
-import ca.uqac.friendschallenge.ui.theme.primaryContainerLight
-import ca.uqac.friendschallenge.ui.theme.primaryLight
 
 import android.Manifest
 import android.content.pm.PackageManager
@@ -72,6 +66,13 @@ fun HomeScreen(modifier: Modifier = Modifier, viewModel: DefiViewModel = remembe
 
         if (isGranted) {
             takePicture.launch(null)
+        }
+    }
+
+    LaunchedEffect(bitmap) {
+        bitmap?.let {
+            viewModel.uploadImage(it)
+            bitmap = null // Reset bitmap after upload
         }
     }
 

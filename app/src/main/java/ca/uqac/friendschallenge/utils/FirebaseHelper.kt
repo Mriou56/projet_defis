@@ -1,16 +1,20 @@
 package ca.uqac.friendschallenge.utils
 
+import android.graphics.Bitmap
 import ca.uqac.friendschallenge.model.FriendModel
 import ca.uqac.friendschallenge.model.FriendStatus
 import ca.uqac.friendschallenge.model.UserModel
 import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.storage.FirebaseStorage
+import java.io.ByteArrayOutputStream
 
 class FirebaseHelper() {
 
     private val auth: FirebaseAuth = FirebaseAuth.getInstance()
     private val firestore: FirebaseFirestore = FirebaseFirestore.getInstance()
+    private val storage = FirebaseStorage.getInstance()
 
     fun checkAuthStatus(callback: (String?) -> Unit) {
         val currentUser = auth.currentUser
@@ -171,6 +175,44 @@ class FirebaseHelper() {
             .addOnFailureListener { exception ->
                 callback(Result.failure(exception))
             }
+    }
+
+    fun uploadPhoto(bitmap: Bitmap, callback: (Result<String>) -> Unit) {
+        val userId = auth.currentUser?.uid ?: return
+
+        // Convert Bitmap to ByteArray
+        val byteArrayOutputStream = ByteArrayOutputStream()
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream)
+        val imageData = byteArrayOutputStream.toByteArray()
+
+        // Upload the photo to Firebase Storage
+        val imageId = firestore.collection("images").document().id
+        val storageRef = storage.getReference("images/$imageId.jpg")
+        val uploadTask = storageRef.putBytes(imageData)
+        uploadTask
+            .continueWithTask { task ->
+                if (!task.isSuccessful) {
+                    throw task.exception ?: Exception("Upload failed")
+                }
+                storageRef.downloadUrl
+            }
+            .addOnSuccessListener { downloadUri ->
+                val data = mapOf(
+                    "imageId" to imageId,
+                    "userId" to userId,
+                    "imageUrl" to downloadUri.toString()
+                )
+
+                firestore.collection("images").document(imageId)
+                    .set(data)
+                    .addOnSuccessListener {
+                        callback(Result.success(downloadUri.toString()))
+                    }
+                    .addOnFailureListener {
+                        callback(Result.failure(it))
+                    }
+            }
+            .addOnFailureListener { callback(Result.failure(it)) }
     }
 
 
