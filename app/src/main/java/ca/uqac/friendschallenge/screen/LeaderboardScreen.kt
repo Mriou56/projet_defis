@@ -24,13 +24,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import ca.uqac.friendschallenge.ui.theme.inversePrimaryLight
-import ca.uqac.friendschallenge.ui.theme.primaryContainerLight
+
 
 @Composable
 fun LeaderboardScreen(modifier: Modifier = Modifier) {
     Column(
         modifier = modifier
-            .background(primaryContainerLight)
             .fillMaxSize(),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
@@ -38,14 +37,16 @@ fun LeaderboardScreen(modifier: Modifier = Modifier) {
             horizontalArrangement = Arrangement.spacedBy(8.dp),
             modifier = Modifier
                 .fillMaxWidth()
-                .background(inversePrimaryLight)
         ) {
         }
 
         Text(
             text = "Classement de la semaine",
             style = MaterialTheme.typography.headlineLarge,
-            modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp).wrapContentWidth(Alignment.CenterHorizontally)
+            modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp).wrapContentWidth(Alignment.CenterHorizontally).background(
+                color = inversePrimaryLight,
+                shape = androidx.compose.foundation.shape.RoundedCornerShape(8.dp)
+            ),
         )
 
         Column(
@@ -97,7 +98,10 @@ fun LeaderboardScreen(modifier: Modifier = Modifier) {
 
 
         Spacer(modifier = Modifier.height(16.dp))
-        Column(modifier = Modifier.padding(horizontal = 16.dp)) {
+        Column(modifier = Modifier.padding(horizontal = 16.dp).background(
+            color = inversePrimaryLight,
+            shape = androidx.compose.foundation.shape.RoundedCornerShape(8.dp)
+        ),) {
             repeat(5) { index ->
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -114,13 +118,16 @@ fun LeaderboardScreen(modifier: Modifier = Modifier) {
         Text(
             text = "Votre position: 7ème - 60 pts",
             style = MaterialTheme.typography.bodyLarge,
-            modifier = Modifier.fillMaxWidth().wrapContentWidth(Alignment.CenterHorizontally).padding(bottom = 8.dp)
+            modifier = Modifier.fillMaxWidth().wrapContentWidth(Alignment.CenterHorizontally).padding(bottom = 8.dp).background(
+                color = inversePrimaryLight,
+                shape = androidx.compose.foundation.shape.RoundedCornerShape(8.dp)
+            ),
         )
     }
 }
 
 @Composable
-@Preview
+@Preview(showBackground = true)
 fun LeaderboardScreenPreview() {
     LeaderboardScreen()
 }

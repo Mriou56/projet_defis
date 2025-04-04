@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
@@ -26,8 +27,11 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import ca.uqac.friendschallenge.R
+import ca.uqac.friendschallenge.ui.theme.backgroundLight
 import ca.uqac.friendschallenge.ui.theme.inversePrimaryLight
+import ca.uqac.friendschallenge.ui.theme.onPrimaryLight
 import ca.uqac.friendschallenge.ui.theme.primaryContainerLight
+import ca.uqac.friendschallenge.ui.theme.primaryLight
 
 @Composable
 fun VoteScreen(modifier: Modifier = Modifier) {
@@ -35,7 +39,6 @@ fun VoteScreen(modifier: Modifier = Modifier) {
 
     Column(
         modifier = modifier
-            .background(primaryContainerLight)
             .fillMaxSize(),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
@@ -43,7 +46,6 @@ fun VoteScreen(modifier: Modifier = Modifier) {
             horizontalArrangement = Arrangement.spacedBy(8.dp),
             modifier = Modifier
                 .fillMaxWidth()
-                .background(inversePrimaryLight)
         ) {
 
         }
@@ -51,19 +53,31 @@ fun VoteScreen(modifier: Modifier = Modifier) {
         Text(
             text = "Prendre une photo d'un érable",
             style = MaterialTheme.typography.headlineMedium,
-            modifier = Modifier.fillMaxWidth().wrapContentWidth(Alignment.CenterHorizontally)
+            modifier = Modifier
+                .fillMaxWidth()
+                .wrapContentWidth(Alignment.CenterHorizontally)
+                .background(
+                    color = inversePrimaryLight,
+                    shape = androidx.compose.foundation.shape.RoundedCornerShape(8.dp)
+                )
+                .padding(8.dp)
         )
 
         Text(
             text = "Paul",
             style = MaterialTheme.typography.bodyMedium,
-            modifier = Modifier.fillMaxWidth().wrapContentWidth(Alignment.Start).padding(start = 16.dp)
+            modifier = Modifier
+                .fillMaxWidth()
+                .wrapContentWidth(Alignment.Start)
+                .padding(start = 16.dp)
         )
 
         Image(
             painter = painterResource(R.drawable.erable),
             contentDescription = "Photo d'un érable",
-            modifier = Modifier.fillMaxWidth().height(200.dp)
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(200.dp)
         )
 
         Column(
@@ -71,17 +85,27 @@ fun VoteScreen(modifier: Modifier = Modifier) {
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(text = "Note du défi : ${rating.toInt()}")
+
             Slider(
                 value = rating,
                 onValueChange = { rating = it },
                 valueRange = 0f..10f,
                 steps = 9,
+                colors = androidx.compose.material3.SliderDefaults.colors(
+                    thumbColor = primaryLight,
+                    activeTrackColor = primaryLight,
+                    inactiveTrackColor = primaryContainerLight
+                ),
                 modifier = Modifier.fillMaxWidth()
             )
         }
 
         Button(
             onClick = { /* Logique pour valider la note */ },
+            colors = ButtonDefaults.buttonColors(
+                containerColor = primaryLight,
+                contentColor = onPrimaryLight
+            ),
             modifier = Modifier.align(Alignment.CenterHorizontally)
         ) {
             Text("Valider")
@@ -92,7 +116,7 @@ fun VoteScreen(modifier: Modifier = Modifier) {
 }
 
 @Composable
-@Preview
+@Preview(showBackground = true)
 fun VoteScreenPreview() {
     VoteScreen()
 }
