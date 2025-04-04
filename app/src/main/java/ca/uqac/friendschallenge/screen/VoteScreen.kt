@@ -32,10 +32,14 @@ import ca.uqac.friendschallenge.ui.theme.inversePrimaryLight
 import ca.uqac.friendschallenge.ui.theme.onPrimaryLight
 import ca.uqac.friendschallenge.ui.theme.primaryContainerLight
 import ca.uqac.friendschallenge.ui.theme.primaryLight
+import ca.uqac.friendschallenge.viewmodel.DefiViewModel
 
 @Composable
-fun VoteScreen(modifier: Modifier = Modifier) {
+fun VoteScreen(modifier: Modifier = Modifier, viewModel: DefiViewModel = remember { DefiViewModel() }) {
     var rating by remember { mutableStateOf(5f) }
+    val weeklyDefi = viewModel.weeklyDefi
+    val isLoading = viewModel.isLoading
+    val errorMessage = viewModel.errorMessage
 
     Column(
         modifier = modifier
@@ -49,19 +53,43 @@ fun VoteScreen(modifier: Modifier = Modifier) {
         ) {
 
         }
-
-        Text(
-            text = "Prendre une photo d'un érable",
-            style = MaterialTheme.typography.headlineMedium,
-            modifier = Modifier
-                .fillMaxWidth()
-                .wrapContentWidth(Alignment.CenterHorizontally)
-                .background(
-                    color = inversePrimaryLight,
-                    shape = androidx.compose.foundation.shape.RoundedCornerShape(8.dp)
-                )
-                .padding(8.dp)
-        )
+        when {
+            isLoading ->
+                Text("Chargement...",
+                    style = MaterialTheme.typography.headlineMedium,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .wrapContentWidth(Alignment.CenterHorizontally)
+                        .background(
+                            color = inversePrimaryLight,
+                            shape = androidx.compose.foundation.shape.RoundedCornerShape(8.dp)
+                        )
+                        .padding(8.dp))
+            errorMessage != null -> Text("Erreur : $errorMessage")
+            weeklyDefi != null -> Text(
+                text = weeklyDefi.consigne,
+                style = MaterialTheme.typography.headlineMedium,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .wrapContentWidth(Alignment.CenterHorizontally)
+                    .background(
+                        color = inversePrimaryLight,
+                        shape = androidx.compose.foundation.shape.RoundedCornerShape(8.dp)
+                    )
+                    .padding(8.dp)
+            )
+            else -> Text(
+                "Aucun défi trouvé.",
+                style = MaterialTheme.typography.headlineMedium,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .wrapContentWidth(Alignment.CenterHorizontally)
+                    .background(
+                        color = inversePrimaryLight,
+                        shape = androidx.compose.foundation.shape.RoundedCornerShape(8.dp)
+                    )
+                    .padding(8.dp))
+        }
 
         Text(
             text = "Paul",
