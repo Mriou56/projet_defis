@@ -76,3 +76,12 @@ fun FriendScreen(
         }
     }
 }
+
+
+@Preview
+@Composable
+fun PreviewFriends(){
+    FriendScreen(
+        currentUser = UserModel("uid", "username", "email")
+    )
+}

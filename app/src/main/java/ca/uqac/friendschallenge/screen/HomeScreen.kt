@@ -40,6 +40,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.core.content.ContextCompat
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.graphics.asImageBitmap
+import ca.uqac.friendschallenge.ui.theme.FriendsChallengeTheme
 import kotlinx.coroutines.launch
 
 @Composable
@@ -73,7 +74,6 @@ fun HomeScreen(modifier: Modifier = Modifier) {
 
     Box(
         modifier = modifier
-            .background(primaryContainerLight)
             .fillMaxSize()
     ) {
         Column(
@@ -143,10 +143,6 @@ fun HomeScreen(modifier: Modifier = Modifier) {
 fun AddChallengeButton(onClick: () -> Unit, modifier: Modifier = Modifier) {
     Button(
         onClick = onClick,
-        colors = ButtonDefaults.buttonColors(
-            containerColor = primaryLight,
-            contentColor = onPrimaryLight
-        ),
         modifier = modifier
             .padding(8.dp)
             .fillMaxWidth()
@@ -162,5 +158,7 @@ fun AddChallengeButton(onClick: () -> Unit, modifier: Modifier = Modifier) {
 @Composable
 @Preview
 fun HomeScreenPreview() {
-    HomeScreen()
+    FriendsChallengeTheme {
+        HomeScreen()
+    }
 }

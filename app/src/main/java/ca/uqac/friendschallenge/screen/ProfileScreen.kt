@@ -37,6 +37,7 @@ import ca.uqac.friendschallenge.model.UserModel
 import ca.uqac.friendschallenge.ui.theme.FriendsChallengeTheme
 import ca.uqac.friendschallenge.ui.theme.primaryContainerLight
 import ca.uqac.friendschallenge.ui.theme.tertiaryLight
+import com.google.firebase.annotations.concurrent.Background
 
 @Composable
 fun ProfileScreen(
@@ -46,7 +47,6 @@ fun ProfileScreen(
 ) {
     Box(
         modifier = modifier
-            .background(primaryContainerLight)
             .fillMaxSize()
     ) {
         Column(
@@ -129,7 +129,6 @@ fun PictureGrid() {
                     .size(100.dp)
                     .padding(2.dp)
                     .clip(RoundedCornerShape(8.dp))
-                    .background(tertiaryLight)
             )
         }
     }
@@ -137,7 +136,7 @@ fun PictureGrid() {
 
 @Preview
 @Composable
-fun PreviewProfileScreen() {
+fun PreviewProfileScreen(showBackground: Boolean = true) {
     FriendsChallengeTheme {
         ProfileScreen(
             userModel = UserModel("uid", "username", "email"),
