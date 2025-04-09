@@ -3,6 +3,7 @@ package ca.uqac.friendschallenge.utils
 import android.graphics.Bitmap
 import ca.uqac.friendschallenge.model.FriendModel
 import ca.uqac.friendschallenge.model.FriendStatus
+import ca.uqac.friendschallenge.model.ImageModel
 import ca.uqac.friendschallenge.model.UserModel
 import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
@@ -213,6 +214,33 @@ class FirebaseHelper() {
                     }
             }
             .addOnFailureListener { callback(Result.failure(it)) }
+    }
+
+    fun fetchUserImages(callback: (Result<List<ImageModel>>) -> Unit) {
+        val userId = auth.currentUser?.uid ?: return
+
+        firestore.collection("users").document(userId).collection("defis")
+            .get()
+            .addOnSuccessListener { querySnapshot ->
+                val images = querySnapshot.documents.mapNotNull { document ->
+                    val imageUrl = document.getString("image")
+                    val consigne = document.getString("consigne_defi") ?: ""
+                    val id = document.id
+
+                    imageUrl?.let {
+                        ImageModel(
+                            id = id,
+                            imageUrl = it,
+                            userId = userId,
+                            consigne_defi = consigne,
+                        )
+                    }
+                }
+                callback(Result.success(images))
+            }
+            .addOnFailureListener { exception ->
+                callback(Result.failure(exception))
+            }
     }
 
 

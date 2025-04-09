@@ -24,6 +24,8 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -32,11 +34,15 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import ca.uqac.friendschallenge.R
+import ca.uqac.friendschallenge.model.ImageModel
 import ca.uqac.friendschallenge.model.UserModel
 import ca.uqac.friendschallenge.ui.theme.FriendsChallengeTheme
 import ca.uqac.friendschallenge.ui.theme.primaryContainerLight
 import ca.uqac.friendschallenge.ui.theme.tertiaryLight
+import ca.uqac.friendschallenge.viewmodel.ProfileViewModel
+import coil.compose.AsyncImage
 import com.google.firebase.annotations.concurrent.Background
 
 @Composable
@@ -45,6 +51,15 @@ fun ProfileScreen(
     onLogoutButtonClicked: () -> Unit = {},
     userModel: UserModel,
 ) {
+    val viewModel : ProfileViewModel = viewModel()
+    val images by viewModel.images
+    val isLoading by viewModel.isLoading
+    val errorMessage by viewModel.errorMessage
+
+    LaunchedEffect(Unit) {
+        viewModel.loadImages()
+    }
+
     Box(
         modifier = modifier
             .fillMaxSize()
@@ -97,7 +112,7 @@ fun ProfileScreen(
                             .padding(vertical = 8.dp, horizontal = 16.dp)
                     )
 
-                    PictureGrid()
+                PictureGrid(images = images)
                 }
             }
 
@@ -107,8 +122,8 @@ fun ProfileScreen(
     }
 
 @Composable
-fun PictureGrid() {
-    val images = listOf(
+fun PictureGrid(images: List<ImageModel>) {
+    val images_test = listOf(
         R.drawable.erable,
         R.drawable.fleurs,
         R.drawable.foret,
@@ -120,9 +135,9 @@ fun PictureGrid() {
         columns = GridCells.Adaptive(100.dp),
         modifier = Modifier.fillMaxSize()
     ) {
-        items(images) { image ->
-            Image(
-                painter = painterResource(image),
+        items(images) { imageModel ->
+            AsyncImage(
+                model = imageModel.imageUrl,
                 contentDescription = null,
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
