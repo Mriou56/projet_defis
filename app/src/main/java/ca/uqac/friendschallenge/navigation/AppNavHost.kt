@@ -38,7 +38,9 @@ fun AppNavHost(
             )
         }
         composable(route = AppScreen.Home.name) {
-            HomeScreen()
+            authState.userModel?.let { user ->
+                HomeScreen(userModel = user)
+            }
         }
         composable(route = AppScreen.Profile.name) {
             authState.userModel?.let { user ->

@@ -1,6 +1,7 @@
 package ca.uqac.friendschallenge.utils
 
 import android.graphics.Bitmap
+import ca.uqac.friendschallenge.model.DefiModel
 import ca.uqac.friendschallenge.model.FriendModel
 import ca.uqac.friendschallenge.model.FriendStatus
 import ca.uqac.friendschallenge.model.ImageModel
@@ -178,7 +179,7 @@ class FirebaseHelper() {
             }
     }
 
-    fun uploadPhoto(bitmap: Bitmap, callback: (Result<String>) -> Unit) {
+    fun uploadPhoto(bitmap: Bitmap, defi: DefiModel, user: UserModel, callback: (Result<String>) -> Unit) {
         val userId = auth.currentUser?.uid ?: return
 
         // Convert Bitmap to ByteArray
@@ -199,15 +200,33 @@ class FirebaseHelper() {
             }
             .addOnSuccessListener { downloadUri ->
                 val data = mapOf(
-                    "imageId" to imageId,
-                    "userId" to userId,
-                    "imageUrl" to downloadUri.toString()
+                    "imageUrl" to downloadUri.toString(),
+                    "username" to user.username,
                 )
 
-                firestore.collection("images").document(imageId)
+                firestore.collection("Defis").document(defi.id).collection("participation")
+                    .document(userId)
                     .set(data)
                     .addOnSuccessListener {
-                        callback(Result.success(downloadUri.toString()))
+                        val dataDefisUser = mapOf(
+                            "image" to downloadUri.toString(),
+                            "defiConsigne" to defi.consigne,
+                            "defiId" to defi.id,
+                            "createdAt" to Timestamp.now()
+                        )
+
+                        val userDocRef = firestore.collection("users").document(userId)
+
+                        userDocRef.collection("defis")
+                            .document(defi.id)
+                            .set(dataDefisUser)
+                            .addOnSuccessListener {
+                                callback(Result.success(downloadUri.toString()))
+                            }
+                            .addOnFailureListener {
+                                callback(Result.failure(it))
+                            }
+
                     }
                     .addOnFailureListener {
                         callback(Result.failure(it))

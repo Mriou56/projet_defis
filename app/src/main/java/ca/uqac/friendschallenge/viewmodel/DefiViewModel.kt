@@ -4,6 +4,7 @@ import android.graphics.Bitmap
 import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import ca.uqac.friendschallenge.model.DefiModel
+import ca.uqac.friendschallenge.model.UserModel
 import ca.uqac.friendschallenge.utils.FirebaseHelper
 
 class DefiViewModel {
@@ -44,9 +45,11 @@ class DefiViewModel {
     }
 
 
-    fun uploadImage(bitmap: Bitmap) {
+    fun uploadImage(bitmap: Bitmap, defi: DefiModel, user: UserModel) {
         firebaseHelper.uploadPhoto(
-            bitmap = bitmap
+            bitmap = bitmap,
+            defi = defi,
+            user = user
         ) { result ->
             result
                 .onSuccess { url ->
