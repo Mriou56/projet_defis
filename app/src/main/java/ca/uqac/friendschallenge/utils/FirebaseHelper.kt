@@ -277,19 +277,25 @@ class FirebaseHelper() {
                 Log.d("DEBUG", "Amis IDs récupérés : $amisIds")
 
                 firestore.collection("Defis").document(defiId)
-                    .collection("participations").get()
+                    .collection("participation").get()
                     .addOnSuccessListener { participationsSnapshot ->
-                        val allParticipations = participationsSnapshot.documents.map {
-                            it.id to it.data
+//                        val allParticipations = participationsSnapshot.documents.map {
+//                            it.id to it.data
+//                        }
+                        Log.d("DEBUG", "Participations récupérées : ${participationsSnapshot.documents.size}")
+                        val allParticipations = participationsSnapshot.documents.mapNotNull { doc ->
+                            doc.toParticipationModel()?.copy(id = doc.id)
                         }
+
 
                         Log.d("DEBUG", "Toutes les participations trouvées : $allParticipations")
 
-                        val participationsFiltrees = participationsSnapshot.documents
-                            .filter { it.id in amisIds }
-                            .mapNotNull { doc ->
-                                doc.toObject(ParticipationModel::class.java)?.copy(userId = doc.id)
-                            }
+//                        val participationsFiltrees = participationsSnapshot.documents
+//                            .filter { it.id in amisIds }
+//                            .mapNotNull { doc ->
+//                                doc.toObject(ParticipationModel::class.java)?.copy(userId = doc.id)
+//                            }
+                        val participationsFiltrees = allParticipations.filter { it.id in amisIds }
 
                         Log.d("DEBUG", "Participations des amis filtrées : $participationsFiltrees")
 
@@ -338,6 +344,14 @@ class FirebaseHelper() {
     private fun Map<String, Any?>.getTimestamp(key: String): Timestamp? = this[key] as? Timestamp
 
     private fun Map<String, Any?>.getBoolean(key: String): Boolean? = this[key] as? Boolean
+
+    private fun com.google.firebase.firestore.DocumentSnapshot.toParticipationModel(): ParticipationModel? {
+        val data = data ?: return null
+//        val userId = data.getString("userId") ?: return null
+        val username = data.getString("username") ?: return null
+        val imageUrl = data.getString("imageUrl") ?: return null
+        return ParticipationModel(id, username, imageUrl)
+    }
 
     private fun com.google.firebase.firestore.QueryDocumentSnapshot.toUserModel(): UserModel? {
         val data = data

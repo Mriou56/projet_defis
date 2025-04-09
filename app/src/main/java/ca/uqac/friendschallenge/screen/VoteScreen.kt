@@ -83,7 +83,7 @@ fun VoteScreen(modifier: Modifier = Modifier, currentUser: UserModel, viewModel:
                 )
 
                 Text(
-                    text = "Utilisateur : ${participation.userId}",
+                    text = "Utilisateur : ${participation.userName}",
                     style = MaterialTheme.typography.bodyMedium,
                     modifier = Modifier.padding(start = 16.dp)
                 )
