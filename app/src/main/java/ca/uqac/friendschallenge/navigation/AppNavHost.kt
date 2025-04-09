@@ -60,7 +60,7 @@ fun AppNavHost(
             LeaderboardScreen()
         }
         composable(route = AppScreen.Vote.name) {
-            VoteScreen()
+            VoteScreen(currentUser = authState.userModel ?: error("User not found"))
         }
         composable(route = AppScreen.Progress.name) {
             ProgressScreen()

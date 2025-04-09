@@ -4,11 +4,15 @@ import android.graphics.Bitmap
 import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import ca.uqac.friendschallenge.model.DefiModel
+import ca.uqac.friendschallenge.model.ParticipationModel
 import ca.uqac.friendschallenge.model.UserModel
 import ca.uqac.friendschallenge.utils.FirebaseHelper
+import com.google.firebase.auth.FirebaseAuth
 
 class DefiViewModel {
     private val firebaseHelper = FirebaseHelper()
+    private val auth: FirebaseAuth = FirebaseAuth.getInstance()
+    val participationsOfFriends = mutableStateOf<List<ParticipationModel>>(emptyList())
 
     // Get the weekly defi and show it in the UI
     private val _weeklyDefi = mutableStateOf<DefiModel?>(null)
@@ -61,4 +65,37 @@ class DefiViewModel {
         }
     }
 
+    fun voteForImage(
+        rating: Float,
+        defiId: String,
+        participationId: String,
+        onSuccess: () -> Unit,
+        onError: (String) -> Unit
+    ) {
+        val userVotantId = auth.currentUser?.uid ?: return onError("Utilisateur non connecté")
+
+        firebaseHelper.voteForImage(
+            rating,
+            userVotantId,
+            defiId,
+            participationId
+        ) { result ->
+            result.onSuccess { onSuccess() }
+                .onFailure { exception -> onError(exception.localizedMessage ?: "Erreur inconnue") }
+        }
+    }
+
+    fun fetchParticipationsOfFriends(defiId: String, userId: String) {
+        Log.d("DEBUG", "Défi utilisé pour chercher les participations : $defiId")
+        Log.d("DEBUG", "UserId utilisé pour chercher les participations : $userId")
+
+        firebaseHelper.getParticipationsOfFriends(defiId, userId) { result ->
+            result.onSuccess {
+                participationsOfFriends.value = it
+            }.onFailure {
+                Log.e("DefiViewModel", "Erreur: ${it.message}")
+            }
+        }
+    }
 }
+

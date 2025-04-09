@@ -1,10 +1,12 @@
 package ca.uqac.friendschallenge.utils
 
 import android.graphics.Bitmap
+import android.util.Log
 import ca.uqac.friendschallenge.model.DefiModel
 import ca.uqac.friendschallenge.model.FriendModel
 import ca.uqac.friendschallenge.model.FriendStatus
 import ca.uqac.friendschallenge.model.ImageModel
+import ca.uqac.friendschallenge.model.ParticipationModel
 import ca.uqac.friendschallenge.model.UserModel
 import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
@@ -260,6 +262,74 @@ class FirebaseHelper() {
             .addOnFailureListener { exception ->
                 callback(Result.failure(exception))
             }
+    }
+
+    fun getParticipationsOfFriends(
+        defiId: String,
+        userId: String,
+        callback: (Result<List<ParticipationModel>>) -> Unit
+    ) {
+        firestore.collection("users").document(userId)
+            .collection("friends").get()
+            .addOnSuccessListener { amisSnapshot ->
+                val amisIds = amisSnapshot.documents.mapNotNull { it.id }
+
+                Log.d("DEBUG", "Amis IDs récupérés : $amisIds")
+
+                firestore.collection("Defis").document(defiId)
+                    .collection("participations").get()
+                    .addOnSuccessListener { participationsSnapshot ->
+                        val allParticipations = participationsSnapshot.documents.map {
+                            it.id to it.data
+                        }
+
+                        Log.d("DEBUG", "Toutes les participations trouvées : $allParticipations")
+
+                        val participationsFiltrees = participationsSnapshot.documents
+                            .filter { it.id in amisIds }
+                            .mapNotNull { doc ->
+                                doc.toObject(ParticipationModel::class.java)?.copy(userId = doc.id)
+                            }
+
+                        Log.d("DEBUG", "Participations des amis filtrées : $participationsFiltrees")
+
+                        callback(Result.success(participationsFiltrees))
+                    }
+                    .addOnFailureListener {
+                        Log.e("DEBUG", "Erreur lors de la récupération des participations : ", it)
+                        callback(Result.failure(it))
+                    }
+            }
+            .addOnFailureListener {
+                Log.e("DEBUG", "Erreur lors de la récupération des amis : ", it)
+                callback(Result.failure(it))
+            }
+    }
+
+
+    fun voteForImage(
+        rating: Float,
+        userVotantId: String,
+        defiId: String,
+        participationId: String,
+        callback: (Result<Unit>) -> Unit
+    ) {
+        val data = mapOf(
+            "idVotant" to userVotantId,
+            "note" to rating
+        )
+
+        firestore.collection("Defis").document(defiId)
+            .collection("participations").document(participationId)
+            .collection("votes")
+            .add(data)
+            .addOnSuccessListener {
+                callback(Result.success(Unit))
+            }
+            .addOnFailureListener { exception ->
+                callback(Result.failure(exception))
+            }
+
     }
 
 
