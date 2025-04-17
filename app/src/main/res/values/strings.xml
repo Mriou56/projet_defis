@@ -22,7 +22,7 @@
     <string name="login_prompt">Déjà un compte ? Se connecter</string>
 
     <!-- Home Screen -->
-    <string name="week_defi">Le défi de la semaine</string>
+    <string name="week_challenge">Le défi de la semaine</string>
     <string name="consigne">Les consignes du défi</string>
 
     <!-- Friends Screen -->

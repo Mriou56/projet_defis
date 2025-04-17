@@ -1,11 +1,8 @@
 package ca.uqac.friendschallenge.screen
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -26,37 +23,44 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import ca.uqac.friendschallenge.R
 import ca.uqac.friendschallenge.model.UserModel
-import ca.uqac.friendschallenge.ui.theme.backgroundLight
 import ca.uqac.friendschallenge.ui.theme.inversePrimaryLight
 import ca.uqac.friendschallenge.ui.theme.onPrimaryLight
 import ca.uqac.friendschallenge.ui.theme.primaryContainerLight
 import ca.uqac.friendschallenge.ui.theme.primaryLight
-import ca.uqac.friendschallenge.viewmodel.DefiViewModel
+import ca.uqac.friendschallenge.viewmodel.ChallengeViewModel
 import coil.compose.AsyncImage
 import android.util.Log
+import androidx.compose.ui.platform.LocalContext
+import androidx.lifecycle.viewmodel.compose.viewModel
+import ca.uqac.friendschallenge.utils.ToastUtils
 
 @Composable
-fun VoteScreen(modifier: Modifier = Modifier, currentUser: UserModel, viewModel: DefiViewModel = remember { DefiViewModel() }) {
+fun VoteScreen(modifier: Modifier = Modifier, currentUser: UserModel) {
+    val viewModel: ChallengeViewModel = viewModel()
     var rating by remember { mutableStateOf(5f) }
     var currentIndex by remember { mutableStateOf(0) }
-    val participations = viewModel.participationsOfFriends
-    val defi = viewModel.weeklyDefi
-    val isLoading = viewModel.isLoading
-    val errorMessage = viewModel.errorMessage
+    val participations by viewModel.participationsOfFriends
+    val challenge by viewModel.weeklyChallenge
+    val isLoading by viewModel.isLoading
+    val errorMessage by viewModel.errorMessage
+
+    val context = LocalContext.current
 
     LaunchedEffect(Unit) {
-        viewModel.fetchWeeklyDefi()
+        viewModel.fetchWeeklyChallenge()
     }
 
-    LaunchedEffect(viewModel.weeklyDefi) {
-        val def = viewModel.weeklyDefi
-        if (def != null) {
-            viewModel.fetchParticipationsOfFriends(defiId = def.id, userId = currentUser.uid)
+    LaunchedEffect(challenge) {
+        if (challenge != null) {
+            viewModel.fetchParticipationsOfFriends(challengeId = challenge!!.id, userId = currentUser.uid)
+        }
+    }
+
+    LaunchedEffect(errorMessage) {
+        if (!errorMessage.isNullOrEmpty()) {
+            ToastUtils.show(context, errorMessage!!)
         }
     }
 
@@ -69,11 +73,11 @@ fun VoteScreen(modifier: Modifier = Modifier, currentUser: UserModel, viewModel:
         when {
             isLoading -> Text("Chargement...", style = MaterialTheme.typography.headlineMedium)
             errorMessage != null -> Text("Erreur : $errorMessage")
-            defi != null && participations.value.isNotEmpty() -> {
-                val participation = participations.value[currentIndex]
+            challenge != null && participations.isNotEmpty() -> {
+                val participation = participations[currentIndex]
 
                 Text(
-                    text = defi.consigne,
+                    text = challenge!!.title,
                     style = MaterialTheme.typography.headlineMedium,
                     modifier = Modifier
                         .fillMaxWidth()
@@ -120,10 +124,10 @@ fun VoteScreen(modifier: Modifier = Modifier, currentUser: UserModel, viewModel:
                     onClick = {
                         viewModel.voteForImage(
                             rating,
-                            defi.id,
+                            challenge!!.id,
                             participation.id,
                             onSuccess = {
-                                if (currentIndex < participations.value.lastIndex) {
+                                if (currentIndex < participations.lastIndex) {
                                     currentIndex++
                                     rating = 5f
                                 } else {
@@ -145,7 +149,7 @@ fun VoteScreen(modifier: Modifier = Modifier, currentUser: UserModel, viewModel:
                     Text("Valider")
                 }
             }
-            defi != null -> Text("Aucune participation d’amis à évaluer.")
+            challenge != null -> Text("Aucune participation d’amis à évaluer.")
         }
 
         Spacer(modifier = Modifier.weight(1f))

@@ -2,7 +2,8 @@ package ca.uqac.friendschallenge.utils
 
 import android.graphics.Bitmap
 import android.util.Log
-import ca.uqac.friendschallenge.model.DefiModel
+import ca.uqac.friendschallenge.model.Challenge
+import ca.uqac.friendschallenge.model.ChallengeStatus
 import ca.uqac.friendschallenge.model.FriendModel
 import ca.uqac.friendschallenge.model.FriendStatus
 import ca.uqac.friendschallenge.model.ImageModel
@@ -10,6 +11,7 @@ import ca.uqac.friendschallenge.model.ParticipationModel
 import ca.uqac.friendschallenge.model.UserModel
 import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FieldPath.documentId
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 import java.io.ByteArrayOutputStream
@@ -158,22 +160,21 @@ class FirebaseHelper() {
             }
     }
 
-
-    fun getWeeklyDefi(callback: (Result<Pair<String, String>>) -> Unit) {
-        firestore.collection("Defis")
-            .get(com.google.firebase.firestore.Source.SERVER)
+    fun getWeeklyChallenge(callback: (Result<Challenge>) -> Unit) {
+        firestore.collection("challenges")
+            .whereEqualTo("status", ChallengeStatus.WEEKLY.name)
+            .get()
             .addOnSuccessListener { querySnapshot ->
-                val weeklyDefi = querySnapshot.documents.firstOrNull { document ->
-                    document.getString("realise") == "WEEKLY"
+                if (querySnapshot.isEmpty) {
+                    callback(Result.failure(Exception("No weekly challenge found")))
+                    return@addOnSuccessListener
                 }
 
-                if (weeklyDefi != null) {
-                    val defiId = weeklyDefi.id
-                    val consigne = weeklyDefi.getString("consigne") ?: "Consigne introuvable"
-
-                    callback(Result.success(Pair(defiId, consigne)))
+                val challenge = querySnapshot.documents.firstOrNull()?.toChallengeModel()
+                if (challenge != null) {
+                    callback(Result.success(challenge))
                 } else {
-                    callback(Result.failure(Exception("Weekly challenge not found")))
+                    callback(Result.failure(Exception("Failed to parse challenge data")))
                 }
             }
             .addOnFailureListener { exception ->
@@ -181,7 +182,7 @@ class FirebaseHelper() {
             }
     }
 
-    fun uploadPhoto(bitmap: Bitmap, defi: DefiModel, user: UserModel, callback: (Result<String>) -> Unit) {
+    fun submitChallengeParticipation(bitmap: Bitmap, challenge: Challenge, user: UserModel, callback: (Result<String>) -> Unit) {
         val userId = auth.currentUser?.uid ?: return
 
         // Convert Bitmap to ByteArray
@@ -206,22 +207,22 @@ class FirebaseHelper() {
                     "username" to user.username,
                 )
 
-                firestore.collection("Defis").document(defi.id).collection("participation")
+                firestore.collection("challenges").document(challenge.id).collection("participation")
                     .document(userId)
                     .set(data)
                     .addOnSuccessListener {
-                        val dataDefisUser = mapOf(
+                        val dataChallengeUser = mapOf(
                             "image" to downloadUri.toString(),
-                            "defiConsigne" to defi.consigne,
-                            "defiId" to defi.id,
+                            "challengeTitle" to challenge.title,
+                            "challengeId" to challenge.id,
                             "createdAt" to Timestamp.now()
                         )
 
                         val userDocRef = firestore.collection("users").document(userId)
 
-                        userDocRef.collection("defis")
-                            .document(defi.id)
-                            .set(dataDefisUser)
+                        userDocRef.collection("challenges")
+                            .document(challenge.id)
+                            .set(dataChallengeUser)
                             .addOnSuccessListener {
                                 callback(Result.success(downloadUri.toString()))
                             }
@@ -237,15 +238,37 @@ class FirebaseHelper() {
             .addOnFailureListener { callback(Result.failure(it)) }
     }
 
+    fun deleteParticipation(challengeId: String, callback: (Result<Unit>) -> Unit) {
+        val userId = auth.currentUser?.uid ?: return
+
+        firestore.collection("challenges").document(challengeId)
+            .collection("participation").document(userId)
+            .delete()
+            .addOnSuccessListener {
+                firestore.collection("users").document(userId)
+                    .collection("challenges").document(challengeId)
+                    .delete()
+                    .addOnSuccessListener {
+                        callback(Result.success(Unit))
+                    }
+                    .addOnFailureListener { exception ->
+                        callback(Result.failure(exception))
+                    }
+            }
+            .addOnFailureListener { exception ->
+                callback(Result.failure(exception))
+            }
+    }
+
     fun fetchUserImages(callback: (Result<List<ImageModel>>) -> Unit) {
         val userId = auth.currentUser?.uid ?: return
 
-        firestore.collection("users").document(userId).collection("defis")
+        firestore.collection("users").document(userId).collection("challenges")
             .get()
             .addOnSuccessListener { querySnapshot ->
                 val images = querySnapshot.documents.mapNotNull { document ->
                     val imageUrl = document.getString("image")
-                    val consigne = document.getString("consigne_defi") ?: ""
+                    val title = document.getString("challengeTitle") ?: ""
                     val id = document.id
 
                     imageUrl?.let {
@@ -253,7 +276,7 @@ class FirebaseHelper() {
                             id = id,
                             imageUrl = it,
                             userId = userId,
-                            consigne_defi = consigne,
+                            challengeTitle = title,
                         )
                     }
                 }
@@ -265,68 +288,50 @@ class FirebaseHelper() {
     }
 
     fun getParticipationsOfFriends(
-        defiId: String,
+        challengeId: String,
         userId: String,
         callback: (Result<List<ParticipationModel>>) -> Unit
     ) {
         firestore.collection("users").document(userId)
-            .collection("friends").get()
+            .collection("friends")
+            .whereEqualTo("status", FriendStatus.ACCEPTED.name)
+            .get()
             .addOnSuccessListener { amisSnapshot ->
                 val amisIds = amisSnapshot.documents.mapNotNull { it.id }
-
-                Log.d("DEBUG", "Amis IDs récupérés : $amisIds")
-
-                firestore.collection("Defis").document(defiId)
-                    .collection("participation").get()
+                firestore.collection("challenges").document(challengeId)
+                    .collection("participation")
+                    .get()
                     .addOnSuccessListener { participationsSnapshot ->
-//                        val allParticipations = participationsSnapshot.documents.map {
-//                            it.id to it.data
-//                        }
-                        Log.d("DEBUG", "Participations récupérées : ${participationsSnapshot.documents.size}")
                         val allParticipations = participationsSnapshot.documents.mapNotNull { doc ->
                             doc.toParticipationModel()?.copy(id = doc.id)
                         }
-
-
-                        Log.d("DEBUG", "Toutes les participations trouvées : $allParticipations")
-
-//                        val participationsFiltrees = participationsSnapshot.documents
-//                            .filter { it.id in amisIds }
-//                            .mapNotNull { doc ->
-//                                doc.toObject(ParticipationModel::class.java)?.copy(userId = doc.id)
-//                            }
                         val participationsFiltrees = allParticipations.filter { it.id in amisIds }
-
-                        Log.d("DEBUG", "Participations des amis filtrées : $participationsFiltrees")
-
                         callback(Result.success(participationsFiltrees))
                     }
                     .addOnFailureListener {
-                        Log.e("DEBUG", "Erreur lors de la récupération des participations : ", it)
                         callback(Result.failure(it))
                     }
             }
             .addOnFailureListener {
-                Log.e("DEBUG", "Erreur lors de la récupération des amis : ", it)
                 callback(Result.failure(it))
             }
     }
 
-
     fun voteForImage(
         rating: Float,
-        userVotantId: String,
-        defiId: String,
+        challengeId: String,
         participationId: String,
         callback: (Result<Unit>) -> Unit
     ) {
+        val userID = auth.currentUser?.uid ?: return
+
         val data = mapOf(
-            "idVotant" to userVotantId,
+            "idVotant" to userID,
             "note" to rating
         )
 
-        firestore.collection("Defis").document(defiId)
-            .collection("participations").document(participationId)
+        firestore.collection("challenges").document(challengeId)
+            .collection("participation").document(participationId)
             .collection("votes")
             .add(data)
             .addOnSuccessListener {
@@ -345,9 +350,16 @@ class FirebaseHelper() {
 
     private fun Map<String, Any?>.getBoolean(key: String): Boolean? = this[key] as? Boolean
 
+    private fun com.google.firebase.firestore.DocumentSnapshot.toChallengeModel(): Challenge? {
+        val data = data ?: return null
+        val id = id
+        val title = data.getString("title") ?: return null
+        val status = data.getString("status")?.let { ChallengeStatus.valueOf(it) } ?: return null
+        return Challenge(id, title, status)
+    }
+
     private fun com.google.firebase.firestore.DocumentSnapshot.toParticipationModel(): ParticipationModel? {
         val data = data ?: return null
-//        val userId = data.getString("userId") ?: return null
         val username = data.getString("username") ?: return null
         val imageUrl = data.getString("imageUrl") ?: return null
         return ParticipationModel(id, username, imageUrl)

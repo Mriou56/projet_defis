@@ -1,67 +1,79 @@
 package ca.uqac.friendschallenge.screen
 
+import android.Manifest
+import android.content.pm.PackageManager
+import android.graphics.Bitmap
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Button
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SmallFloatingActionButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-
-import android.Manifest
-import android.content.pm.PackageManager
-import android.graphics.Bitmap
-import androidx.compose.foundation.Image
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material3.Icon
-import androidx.compose.material3.SmallFloatingActionButton
-import androidx.compose.runtime.LaunchedEffect
 import androidx.core.content.ContextCompat
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.ui.graphics.asImageBitmap
-import androidx.compose.ui.text.style.TextAlign
+import androidx.lifecycle.viewmodel.compose.viewModel
 import ca.uqac.friendschallenge.model.UserModel
-import ca.uqac.friendschallenge.viewmodel.DefiViewModel
+import ca.uqac.friendschallenge.utils.ToastUtils
+import ca.uqac.friendschallenge.viewmodel.ChallengeViewModel
+import coil.compose.AsyncImage
 import kotlinx.coroutines.launch
+
 
 @Composable
 fun HomeScreen(
     modifier: Modifier = Modifier,
-    viewModel: DefiViewModel = remember { DefiViewModel() },
     userModel: UserModel
 ) {
+    val viewModel: ChallengeViewModel = viewModel()
+    val weeklyDefi by viewModel.weeklyChallenge
+    val isParticipating by viewModel.isParticipating
+    val urlImage by viewModel.participationImageUrl
+    val isLoading by viewModel.isLoading
+    val errorMessage by viewModel.errorMessage
+
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     var hasCameraPermission by remember { mutableStateOf(false) }
-    val weeklyDefi = viewModel.weeklyDefi
-    val isLoading = viewModel.isLoading
-    val errorMessage = viewModel.errorMessage
 
     LaunchedEffect(Unit) {
         hasCameraPermission = ContextCompat.checkSelfPermission(
             context, Manifest.permission.CAMERA
         ) == PackageManager.PERMISSION_GRANTED
-        viewModel.fetchWeeklyDefi()
+    }
+
+    LaunchedEffect(errorMessage) {
+        if (!errorMessage.isNullOrEmpty()) {
+            ToastUtils.show(context, errorMessage!!)
+        }
     }
 
     var bitmap by remember { mutableStateOf<Bitmap?>(null) }
+
     val takePicture = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.TakePicturePreview()
     ) { result: Bitmap? ->
@@ -76,10 +88,6 @@ fun HomeScreen(
         }
     }
 
-//    LaunchedEffect(bitmap) {
-
-//    }
-
     Box(
         modifier = modifier
             .fillMaxSize()
@@ -91,13 +99,6 @@ fun HomeScreen(
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
 
-
-//            Text(
-//                text = stringResource(R.string.week_defi),
-//                style = MaterialTheme.typography.headlineMedium,
-//                modifier = Modifier.padding(vertical = 8.dp, horizontal = 16.dp)
-//            )
-
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -108,16 +109,11 @@ fun HomeScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                 ){
-//                    Text(
-//                        text = stringResource(R.string.consigne),
-//                        style = MaterialTheme.typography.headlineSmall,
-//                        modifier = Modifier.padding(bottom = 4.dp)
-//                    )
                     when {
                         isLoading -> Text("Chargement...")
                         errorMessage != null -> Text("Erreur : $errorMessage")
                         weeklyDefi != null -> Text(
-                            text = weeklyDefi.consigne,
+                            text = weeklyDefi!!.title,
                             style = MaterialTheme.typography.headlineLarge,
                             textAlign = TextAlign.Center
                         )
@@ -130,22 +126,31 @@ fun HomeScreen(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier
             ) {
-                if (bitmap != null) {
+                if (bitmap != null || (urlImage != null && isParticipating)) {
                     Column(modifier = Modifier.padding(bottom = 30.dp)) {
                         Box(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .height(450.dp)
+                                .fillMaxHeight(0.9f)
                         ) {
-                            Image(
-                                bitmap = bitmap!!.asImageBitmap(),
-                                contentDescription = "Captured photo",
-                                modifier = Modifier.fillMaxSize()
-                            )
+                            if (urlImage != null && isParticipating) {
+                                AsyncImage(
+                                    model = urlImage,
+                                    contentDescription = "Mon image",
+                                    modifier = Modifier.fillMaxSize()
+                                )
+                            } else {
+                                Image(
+                                    bitmap = bitmap!!.asImageBitmap(),
+                                    contentDescription = "Captured photo",
+                                    modifier = Modifier.fillMaxSize()
+                                )
+                            }
 
                             SmallFloatingActionButton(
                                 onClick = {
                                     bitmap = null
+                                    viewModel.deleteParticipation(weeklyDefi!!.id)
                                 },
                                 modifier = Modifier
                                     .align(Alignment.TopEnd)
@@ -159,10 +164,10 @@ fun HomeScreen(
                         }
                     }
                 } else {
-                    Spacer(modifier = Modifier.height(150.dp))
+                    Spacer(modifier = Modifier.fillMaxHeight(0.5f))
                 }
 
-                if (bitmap == null) {
+                if (bitmap == null && !isParticipating) {
                     AddChallengeButton(
                         onClick = {
                             if (hasCameraPermission) {
@@ -177,11 +182,11 @@ fun HomeScreen(
                             .fillMaxWidth()
                             .padding(horizontal = 32.dp)
                     )
-                } else {
+                } else if (!isParticipating) {
                     Button(
                         onClick = {
                             if (weeklyDefi != null && bitmap != null) {
-                                viewModel.uploadImage(bitmap!!, weeklyDefi, userModel)
+                                viewModel.participatingToChallenge(bitmap!!, weeklyDefi!!, userModel)
                                 bitmap = null // Reset bitmap after upload
                             }
                         },
