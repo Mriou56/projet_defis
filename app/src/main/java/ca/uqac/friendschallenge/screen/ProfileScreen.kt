@@ -154,7 +154,7 @@ fun PictureGrid(images: List<ImageModel>) {
 fun PreviewProfileScreen(showBackground: Boolean = true) {
     FriendsChallengeTheme {
         ProfileScreen(
-            userModel = UserModel("uid", "username", "email"),
+            userModel = UserModel("uid", "username", "email", 0.0, 0.0),
             onLogoutButtonClicked = {}
         )
     }

@@ -81,14 +81,14 @@ fun FriendSearchBarPreview() {
             searchQuery = "username",
             isLoading = false,
             searchResults = listOf(
-                UserModel("2", "username2", "email"),
-                UserModel("3", "username3", "email"),
+                UserModel("2", "username2", "email", 10.0, 1.0),
+                UserModel("3", "username3", "email", 20.0, 2.0),
             ),
             friends = listOf(
-                FriendModel("2", "username2", FriendStatus.PENDING, "1", Timestamp.now()),
+                FriendModel("2", "username2", FriendStatus.PENDING, "1", Timestamp.now(), 100.0, 10.0),
             ),
             errorMessage = null,
-            currentUser = UserModel("1", "username", "email"),
+            currentUser = UserModel("1", "username", "email", 100.0, 10.0),
             onSearchQueryChange = {},
             onAddFriend = {}
         )

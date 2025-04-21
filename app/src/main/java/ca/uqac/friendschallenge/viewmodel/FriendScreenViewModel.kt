@@ -85,10 +85,10 @@ class FriendScreenViewModel : ViewModel() {
 
     fun sendFriendRequest(friend: UserModel, currentUser: UserModel) {
         val senderModel = FriendModel(
-            friend.uid, friend.username, FriendStatus.PENDING, currentUser.uid, Timestamp.now()
+            friend.uid, friend.username, FriendStatus.PENDING, currentUser.uid, Timestamp.now(), 0.0, 0.0
         )
         val receiverModel = FriendModel(
-            currentUser.uid, currentUser.username, FriendStatus.REQUESTED, currentUser.uid, Timestamp.now()
+            currentUser.uid, currentUser.username, FriendStatus.REQUESTED, currentUser.uid, Timestamp.now(), 0.0, 0.0
         )
 
         firebaseHelper.performFriendOperation(currentUser.uid, friend.uid, senderModel, receiverModel) { result ->
@@ -104,7 +104,7 @@ class FriendScreenViewModel : ViewModel() {
     fun acceptFriendRequest(friend: FriendModel, currentUser: UserModel) {
         val senderModel = friend.copy(status = FriendStatus.ACCEPTED, createdAt = Timestamp.now())
         val receiverModel = FriendModel(
-            currentUser.uid, currentUser.username, FriendStatus.ACCEPTED, friend.sentBy, Timestamp.now()
+            currentUser.uid, currentUser.username, FriendStatus.ACCEPTED, friend.sentBy, Timestamp.now(), 0.0, 0.0
         )
 
         firebaseHelper.performFriendOperation(currentUser.uid, friend.friendId, senderModel, receiverModel) { result ->
@@ -120,7 +120,7 @@ class FriendScreenViewModel : ViewModel() {
     fun rejectFriendRequest(friend: FriendModel, currentUser: UserModel) {
         val senderModel = friend.copy(status = FriendStatus.REJECTED, createdAt = Timestamp.now())
         val receiverModel = FriendModel(
-            currentUser.uid, currentUser.username, FriendStatus.REJECTED, friend.sentBy, Timestamp.now()
+            currentUser.uid, currentUser.username, FriendStatus.REJECTED, friend.sentBy, Timestamp.now(), 0.0, 0.0
         )
 
         firebaseHelper.performFriendOperation(currentUser.uid, friend.friendId, senderModel, receiverModel) { result ->

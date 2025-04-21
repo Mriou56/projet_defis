@@ -32,6 +32,7 @@ fun FriendRankingSection(friends: List<FriendModel>) {
         )
 
         friends.filter { it.status == FriendStatus.ACCEPTED }
+            .sortedByDescending { it.totalScore }
             .forEachIndexed { index, friend ->
                 Row(
                     modifier = Modifier
@@ -40,7 +41,7 @@ fun FriendRankingSection(friends: List<FriendModel>) {
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     Text(friend.friendName, style = MaterialTheme.typography.bodyLarge)
-                    Text("${100 - index * 5} pts", style = MaterialTheme.typography.bodyLarge)
+                    Text("${friend.totalScore} pts", style = MaterialTheme.typography.bodyLarge)
                 }
                 HorizontalDivider()
             }
@@ -51,16 +52,16 @@ fun FriendRankingSection(friends: List<FriendModel>) {
 @Composable
 fun FriendRankingSectionPreview() {
     val friends = listOf(
-        FriendModel("1", "username", FriendStatus.ACCEPTED, "1", Timestamp.now()),
-        FriendModel("2", "username", FriendStatus.ACCEPTED, "1", Timestamp.now()),
-        FriendModel("3", "username", FriendStatus.ACCEPTED, "1", Timestamp.now()),
-        FriendModel("4", "username", FriendStatus.ACCEPTED, "1", Timestamp.now()),
-        FriendModel("5", "username", FriendStatus.ACCEPTED, "1", Timestamp.now()),
-        FriendModel("6", "username", FriendStatus.ACCEPTED, "1", Timestamp.now()),
-        FriendModel("7", "username", FriendStatus.ACCEPTED, "1", Timestamp.now()),
-        FriendModel("8", "username", FriendStatus.ACCEPTED, "1", Timestamp.now()),
-        FriendModel("9", "username", FriendStatus.ACCEPTED, "1", Timestamp.now()),
-        FriendModel("10", "username", FriendStatus.ACCEPTED, "1", Timestamp.now()),
+        FriendModel("1", "username", FriendStatus.ACCEPTED, "1", Timestamp.now(), 100.0, 10.0),
+        FriendModel("2", "username", FriendStatus.ACCEPTED, "1", Timestamp.now(), 90.0, 9.0),
+        FriendModel("3", "username", FriendStatus.ACCEPTED, "1", Timestamp.now(), 80.0, 8.0),
+        FriendModel("4", "username", FriendStatus.ACCEPTED, "1", Timestamp.now(), 70.0, 7.0),
+        FriendModel("5", "username", FriendStatus.ACCEPTED, "1", Timestamp.now(), 60.0, 6.0),
+        FriendModel("6", "username", FriendStatus.ACCEPTED, "1", Timestamp.now(), 50.0, 5.0),
+        FriendModel("7", "username", FriendStatus.ACCEPTED, "1", Timestamp.now(), 40.0, 4.0),
+        FriendModel("8", "username", FriendStatus.ACCEPTED, "1", Timestamp.now(), 30.0, 3.0),
+        FriendModel("9", "username", FriendStatus.ACCEPTED, "1", Timestamp.now(), 20.0, 2.0),
+        FriendModel("10", "username", FriendStatus.ACCEPTED, "1", Timestamp.now(), 10.0, 1.0),
     )
     FriendsChallengeTheme {
         FriendRankingSection(friends = friends)

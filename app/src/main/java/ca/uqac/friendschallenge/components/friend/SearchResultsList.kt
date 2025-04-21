@@ -41,12 +41,12 @@ fun PreviewSearchResultsList() {
     FriendsChallengeTheme {
         SearchResultsList(
             searchResults = listOf(
-                UserModel(uid = "1", username = "Alice", email = "alice@alice.com"),
-                UserModel(uid = "2", username = "Bob", email = "bob@bob.com")
+                UserModel(uid = "1", username = "Alice", email = "alice@alice.com", scoreSemaine = 100.0, totalScore = 1000.0),
+                UserModel(uid = "2", username = "Bob", email = "bob@bob.com", scoreSemaine = 100.0, totalScore = 200.0),
             ),
-            currentUser = UserModel(uid = "0", username = "CurrentUser", email = "currentuser@current.com"),
+            currentUser = UserModel(uid = "0", username = "CurrentUser", email = "currentuser@current.com", scoreSemaine = 100.0, totalScore = 1000.0),
             friends = listOf(
-                FriendModel(friendId = "1", friendName = "Alice", status = FriendStatus.PENDING, sentBy = "1", createdAt = Timestamp.now())
+                FriendModel(friendId = "1", friendName = "Alice", status = FriendStatus.PENDING, sentBy = "1", createdAt = Timestamp.now(), totalScore = 100.0, scoreSemaine = 10.0),
             ),
             onAddFriend = {}
         )

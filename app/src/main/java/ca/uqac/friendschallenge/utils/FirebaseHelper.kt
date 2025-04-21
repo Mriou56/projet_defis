@@ -42,7 +42,7 @@ class FirebaseHelper() {
         auth.createUserWithEmailAndPassword(email, password)
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
-                    val user = UserModel(auth.currentUser?.uid ?: "", username, email)
+                    val user = UserModel(auth.currentUser?.uid ?: "", username, email, 0.0, 0.0)
                     callback(Result.success(user))
                 } else {
                     callback(Result.failure(task.exception ?: Exception("Registration failed")))
@@ -367,6 +367,43 @@ class FirebaseHelper() {
             }
     }
 
+    fun CalculateAverageAndUpdateScore(challengeId: String, participationId: String, userId: String) {
+        val votesRef = FirebaseFirestore.getInstance()
+            .collection("challenges")
+            .document(challengeId)
+            .collection("participations")
+            .document(participationId)
+            .collection("votes")
+
+        votesRef.get().addOnSuccessListener { snapshot ->
+            val notes = snapshot.documents.mapNotNull { it.getDouble("note") }
+            if (notes.isNotEmpty()) {
+                val moyenne = notes.average()
+
+
+                val userRef = FirebaseFirestore.getInstance().collection("users").document(userId)
+                userRef.get().addOnSuccessListener { document ->
+                    val currentScore = document.getDouble("score") ?: 0.0
+                    val newTotalScore = currentScore + moyenne
+                    val WeekScore = moyenne
+
+                    userRef.update(mapOf(
+                        "score" to newTotalScore,
+                        "scoreSemaine" to WeekScore,
+                    )).addOnSuccessListener {
+                        Log.d("ScoreUpdate", "Mise à jour réussie ! Total : $newTotalScore, Semaine : $WeekScore")
+                    }.addOnFailureListener { e ->
+                        Log.e("ScoreUpdate", "Erreur de mise à jour", e)
+                    }
+                }
+            } else {
+                Log.d("ScoreUpdate", "Aucune note trouvée pour cette participation.")
+            }
+        }.addOnFailureListener { e ->
+            Log.e("FirestoreError", "Impossible de récupérer les votes.", e)
+        }
+    }
+
 
     private fun Map<String, Any?>.getString(key: String): String? = this[key] as? String
 
@@ -394,7 +431,9 @@ class FirebaseHelper() {
         val userId = data.getString("uid") ?: return null
         val username = data.getString("username") ?: return null
         val email = data.getString("email") ?: return null
-        return UserModel(userId, username, email)
+        val totalScore = getDouble("totalScore") ?: 0.0
+        val scoreSemaine = getDouble("scoreSemaine") ?: 0.0
+        return UserModel(userId, username, email, totalScore, scoreSemaine)
     }
 
     private fun com.google.firebase.firestore.DocumentSnapshot.toUserModel(): UserModel? {
@@ -402,16 +441,20 @@ class FirebaseHelper() {
         val uid = data.getString("uid") ?: return null
         val username = data.getString("username") ?: return null
         val email = data.getString("email") ?: return null
-        return UserModel(uid, username, email)
+        val totalScore = getDouble("totalScore") ?: 0.0
+        val scoreSemaine = getDouble("scoreSemaine") ?: 0.0
+        return UserModel(uid, username, email, totalScore, scoreSemaine)
     }
 
     private fun com.google.firebase.firestore.QueryDocumentSnapshot.toFriendModel(): FriendModel? {
-        val data = data
-        val friendId = data.getString("friendId") ?: return null
-        val friendName = data.getString("friendName") ?: return null
-        val status = data.getString("status")?.let { FriendStatus.valueOf(it) } ?: return null
-        val sentBy = data.getString("sentBy") ?: return null
-        val createdAt = data.getTimestamp("createdAt") ?: return null
-        return FriendModel(friendId, friendName, status, sentBy, createdAt)
+        val friendId = getString("friendId") ?: return null
+        val friendName = getString("friendName") ?: return null
+        val status = getString("status")?.let { FriendStatus.valueOf(it) } ?: return null
+        val sentBy = getString("sentBy") ?: return null
+        val createdAt = getTimestamp("createdAt") ?: return null
+        val totalScore = getDouble("totalScore") ?: 0.0
+        val scoreSemaine = getDouble("scoreSemaine") ?: 0.0
+
+        return FriendModel(friendId, friendName, status, sentBy, createdAt, totalScore, scoreSemaine)
     }
 }

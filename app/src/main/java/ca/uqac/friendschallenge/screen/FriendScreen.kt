@@ -82,6 +82,6 @@ fun FriendScreen(
 @Composable
 fun PreviewFriends(){
     FriendScreen(
-        currentUser = UserModel("uid", "username", "email")
+        currentUser = UserModel("uid", "username", "email", 0.0, 0.0),
     )
 }

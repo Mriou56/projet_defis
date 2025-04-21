@@ -48,7 +48,7 @@ fun FriendSearchResultItem(
 fun FriendSearchResultItemPreview() {
     FriendsChallengeTheme {
         FriendSearchResultItem(
-            user = UserModel("1", "username", "email"),
+            user = UserModel("1", "username", "email", 0.0, 0.0),
             alreadyRequested = false,
             onAddFriend = {}
         )
