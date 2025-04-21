@@ -171,6 +171,7 @@ class FirebaseHelper() {
                 }
 
                 val challenge = querySnapshot.documents.firstOrNull()?.toChallengeModel()
+
                 if (challenge != null) {
                     callback(Result.success(challenge))
                 } else {
@@ -332,8 +333,8 @@ class FirebaseHelper() {
 
         firestore.collection("challenges").document(challengeId)
             .collection("participation").document(participationId)
-            .collection("votes")
-            .add(data)
+            .collection("votes").document(userID)
+            .set(data)
             .addOnSuccessListener {
                 callback(Result.success(Unit))
             }
@@ -341,6 +342,29 @@ class FirebaseHelper() {
                 callback(Result.failure(exception))
             }
 
+    }
+
+    fun markVotingCompleted(userId: String, callback: (Result<Unit>) -> Unit) {
+        val data = mapOf("voted" to true)
+
+        firestore.collection("users")
+            .document(userId)
+            .update(data)
+            .addOnSuccessListener { callback(Result.success(Unit)) }
+            .addOnFailureListener { exception -> callback(Result.failure(exception)) }
+    }
+
+    fun checkIfUserVoted(userId: String, onResult: (Boolean) -> Unit) {
+        firestore.collection("users")
+            .document(userId)
+            .get()
+            .addOnSuccessListener { document ->
+                val voted = document.getBoolean("voted") ?: false
+                onResult(voted)
+            }
+            .addOnFailureListener {
+                onResult(false)
+            }
     }
 
 

@@ -25,6 +25,9 @@ class ChallengeViewModel : ViewModel(){
     private val _participationImageUrl = mutableStateOf<String?>(null)
     val participationImageUrl: State<String?> get() = _participationImageUrl
 
+    private val _hasVoted = mutableStateOf<Boolean?>(null)
+    val hasVoted: State<Boolean?> = _hasVoted
+
     private val _isLoading = mutableStateOf(false)
     val isLoading: State<Boolean> get() = _isLoading
 
@@ -123,6 +126,23 @@ class ChallengeViewModel : ViewModel(){
         firebaseHelper.getParticipationsOfFriends(challengeId, userId) { result ->
             result.onSuccess {
                 participationsOfFriends.value = it
+            }.onFailure {
+                _errorMessage.value = it.localizedMessage
+            }
+        }
+    }
+
+    fun checkIfUserVoted(userId: String) {
+        _hasVoted.value = null
+        firebaseHelper.checkIfUserVoted(userId) { voted ->
+            _hasVoted.value = voted
+        }
+    }
+
+    fun markVotingCompleted(userId: String) {
+        firebaseHelper.markVotingCompleted(userId) { result ->
+            result.onSuccess {
+                _hasVoted.value = true
             }.onFailure {
                 _errorMessage.value = it.localizedMessage
             }

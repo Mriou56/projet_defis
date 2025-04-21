@@ -45,11 +45,13 @@ fun VoteScreen(modifier: Modifier = Modifier, currentUser: UserModel) {
     val challenge by viewModel.weeklyChallenge
     val isLoading by viewModel.isLoading
     val errorMessage by viewModel.errorMessage
+    val hasVoted = viewModel.hasVoted.value
 
     val context = LocalContext.current
 
     LaunchedEffect(Unit) {
         viewModel.fetchWeeklyChallenge()
+        viewModel.checkIfUserVoted(currentUser.uid)
     }
 
     LaunchedEffect(challenge) {
@@ -71,8 +73,25 @@ fun VoteScreen(modifier: Modifier = Modifier, currentUser: UserModel) {
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         when {
-            isLoading -> Text("Chargement...", style = MaterialTheme.typography.headlineMedium)
-            errorMessage != null -> Text("Erreur : $errorMessage")
+            isLoading -> {
+                Text("Chargement...", style = MaterialTheme.typography.headlineMedium)
+            }
+            errorMessage != null -> {
+                Text("Erreur : $errorMessage")
+            }
+            hasVoted == true -> {
+                Text(
+                    "Merci ! Vous avez évalué toutes les participations de vos amis. 🎉",
+                    style = MaterialTheme.typography.headlineMedium,
+                    modifier = Modifier.align(Alignment.CenterHorizontally)
+                )
+                Text(
+                    "Pensez à revenir plus tard pour voir les résultats !",
+                    style = MaterialTheme.typography.bodyMedium,
+                    modifier = Modifier.align(Alignment.CenterHorizontally)
+                )
+            }
+
             challenge != null && participations.isNotEmpty() -> {
                 val participation = participations[currentIndex]
 
@@ -131,8 +150,8 @@ fun VoteScreen(modifier: Modifier = Modifier, currentUser: UserModel) {
                                     currentIndex++
                                     rating = 5f
                                 } else {
-                                    // Fin des participations à noter
                                     Log.d("VoteScreen", "Tous les votes ont été envoyés")
+                                    viewModel.markVotingCompleted(currentUser.uid)
                                 }
                             },
                             onError = {
@@ -149,7 +168,10 @@ fun VoteScreen(modifier: Modifier = Modifier, currentUser: UserModel) {
                     Text("Valider")
                 }
             }
-            challenge != null -> Text("Aucune participation d’amis à évaluer.")
+
+            challenge != null -> {
+                Text("Aucune participation d’amis à évaluer.")
+            }
         }
 
         Spacer(modifier = Modifier.weight(1f))
