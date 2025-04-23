@@ -9,7 +9,7 @@ data class FriendModel(
     val sentBy: String,
     val createdAt: Timestamp,
     val totalScore: Double,
-    val scoreSemaine: Double,
+    val scoreWeek: Double,
 )
 
 enum class FriendStatus {

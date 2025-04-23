@@ -442,18 +442,19 @@ class FirebaseHelper() {
         val username = data.getString("username") ?: return null
         val email = data.getString("email") ?: return null
         val totalScore = getDouble("totalScore") ?: 0.0
-        val scoreSemaine = getDouble("scoreSemaine") ?: 0.0
+        val scoreSemaine = getDouble("scoreWeek") ?: 0.0
         return UserModel(uid, username, email, totalScore, scoreSemaine)
     }
 
     private fun com.google.firebase.firestore.QueryDocumentSnapshot.toFriendModel(): FriendModel? {
-        val friendId = getString("friendId") ?: return null
-        val friendName = getString("friendName") ?: return null
-        val status = getString("status")?.let { FriendStatus.valueOf(it) } ?: return null
-        val sentBy = getString("sentBy") ?: return null
-        val createdAt = getTimestamp("createdAt") ?: return null
+        val data = data
+        val friendId = data.getString("friendId") ?: return null
+        val friendName = data.getString("friendName") ?: return null
+        val status = data.getString("status")?.let { FriendStatus.valueOf(it) } ?: return null
+        val sentBy = data.getString("sentBy") ?: return null
+        val createdAt = data.getTimestamp("createdAt") ?: return null
         val totalScore = getDouble("totalScore") ?: 0.0
-        val scoreSemaine = getDouble("scoreSemaine") ?: 0.0
+        val scoreSemaine = getDouble("scoreWeek") ?: 0.0
 
         return FriendModel(friendId, friendName, status, sentBy, createdAt, totalScore, scoreSemaine)
     }

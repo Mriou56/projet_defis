@@ -29,8 +29,8 @@ fun LeaderboardScreen(currentUser: UserModel, modifier: Modifier = Modifier) {
     val friends by viewModel.friends
 
     val allPlayers = (friends.map {
-        PlayerScore(name = it.friendName, scoreSemaine = it.scoreSemaine)
-    } + PlayerScore(name = currentUser.username, scoreSemaine = currentUser.scoreSemaine))
+        PlayerScore(name = it.friendName, scoreSemaine = it.scoreWeek)
+    } + PlayerScore(name = currentUser.username, scoreSemaine = currentUser.scoreWeek))
         .sortedByDescending { it.scoreSemaine }
     val top3 = allPlayers.take(3)
     val positionUser = allPlayers.indexOfFirst { it.name == currentUser.username } + 1
@@ -81,11 +81,11 @@ fun LeaderboardScreen(currentUser: UserModel, modifier: Modifier = Modifier) {
         ) {
             allPlayers.drop(3).forEachIndexed { index, player ->
                 Row(
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier.fillMaxWidth().padding(6.dp),
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     Text(text = "${index + 4}. ${player.name}", style = MaterialTheme.typography.bodyLarge)
-                    Text(text = "${player.scoreSemaine.toInt()} pts", style = MaterialTheme.typography.bodyLarge)
+                    Text(text = "${player.scoreSemaine} pts", style = MaterialTheme.typography.bodyLarge)
                 }
                 Divider()
             }
@@ -94,7 +94,7 @@ fun LeaderboardScreen(currentUser: UserModel, modifier: Modifier = Modifier) {
         Spacer(modifier = Modifier.weight(1f))
 
         Text(
-            text = "Votre position: ${positionUser}ème - ${currentUser.scoreSemaine.toInt()} pts",
+            text = "Votre position: ${positionUser}ème - ${currentUser.scoreWeek.toInt()} pts",
             style = MaterialTheme.typography.bodyLarge,
             modifier = Modifier
                 .fillMaxWidth()
@@ -125,7 +125,7 @@ fun LeaderboardPodiumPlayer(medal: String, player: PlayerScore, isFirst: Boolean
                 .background(bgColor, RoundedCornerShape(8.dp)),
             contentAlignment = Alignment.Center
         ) {
-            Text(text = "${player.scoreSemaine.toInt()} pts", style = MaterialTheme.typography.bodyLarge, color = Color.Black)
+            Text(text = "${player.scoreSemaine} pts", style = MaterialTheme.typography.bodyLarge, color = Color.Black)
         }
     }
 }
