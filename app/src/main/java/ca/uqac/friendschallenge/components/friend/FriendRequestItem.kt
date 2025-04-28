@@ -21,6 +21,14 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import ca.uqac.friendschallenge.ui.theme.FriendsChallengeTheme
 
+/**
+ * The FriendRequestItem composable function displays a single friend request item with the user's name
+ * and buttons to accept or decline the request.
+ *
+ * @param userName The name of the user who sent the friend request.
+ * @param onAccept Callback function to be invoked when the accept button is clicked.
+ * @param onDecline Callback function to be invoked when the decline button is clicked.
+ */
 @Composable
 fun FriendRequestItem(
     userName: String,
@@ -35,11 +43,13 @@ fun FriendRequestItem(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
+            // Display the user's name who sent the friend request
             Text(
                 text = userName,
                 style = MaterialTheme.typography.bodyLarge,
                 modifier = Modifier.weight(1f)
             )
+            // Buttons to accept or decline the friend request
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 Button(
                     onClick = onAccept,
@@ -59,6 +69,9 @@ fun FriendRequestItem(
     }
 }
 
+/**
+ * Preview function for the FriendRequestItem composable.
+ */
 @Preview(showBackground = true)
 @Composable
 fun FriendRequestItemPreview() {

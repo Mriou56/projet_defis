@@ -1,7 +1,6 @@
 package ca.uqac.friendschallenge.screen
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -39,12 +38,16 @@ import ca.uqac.friendschallenge.R
 import ca.uqac.friendschallenge.model.ImageModel
 import ca.uqac.friendschallenge.model.UserModel
 import ca.uqac.friendschallenge.ui.theme.FriendsChallengeTheme
-import ca.uqac.friendschallenge.ui.theme.primaryContainerLight
-import ca.uqac.friendschallenge.ui.theme.tertiaryLight
 import ca.uqac.friendschallenge.viewmodel.ProfileViewModel
 import coil.compose.AsyncImage
-import com.google.firebase.annotations.concurrent.Background
 
+/**
+ * The ProfileScreen composable function displays the profile screen of current application user.
+ *
+ * @param modifier The modifier to be applied to the root layout.
+ * @param onLogoutButtonClicked Callback function to be invoked when the logout button is clicked.
+ * @param userModel The user model representing the current user.
+ */
 @Composable
 fun ProfileScreen(
     modifier: Modifier = Modifier,
@@ -53,12 +56,12 @@ fun ProfileScreen(
 ) {
     val viewModel : ProfileViewModel = viewModel()
     val images by viewModel.images
-    val isLoading by viewModel.isLoading
-    val errorMessage by viewModel.errorMessage
 
+    // Load images when the screen is first composed
     LaunchedEffect(Unit) {
         viewModel.loadImages()
     }
+
 
     Box(
         modifier = modifier
@@ -75,6 +78,7 @@ fun ProfileScreen(
                     .padding(bottom = 16.dp)
                     .fillMaxWidth()
             ) {
+                // User information section with logout button
                 Image(
                     painter = painterResource(R.drawable.profile),
                     contentDescription = "profile picture",
@@ -104,6 +108,7 @@ fun ProfileScreen(
 
             Spacer(modifier = Modifier.height(150.dp))
 
+            // Section title for profile pictures
             Column() {
                     Text(
                         text = stringResource(R.string.profile_picture),
@@ -121,21 +126,19 @@ fun ProfileScreen(
 
     }
 
+/**
+ * The PictureGrid composable function displays a grid of images.
+ *
+ * @param images The list of image models to be displayed in the grid.
+ */
 @Composable
 fun PictureGrid(images: List<ImageModel>) {
-    val images_test = listOf(
-        R.drawable.erable,
-        R.drawable.fleurs,
-        R.drawable.foret,
-        R.drawable.photo,
-        R.drawable.ponton,
-    )
-
     LazyVerticalGrid(
         columns = GridCells.Adaptive(100.dp),
         modifier = Modifier.fillMaxSize()
     ) {
         items(images) { imageModel ->
+            // Display each image with rounded corners
             AsyncImage(
                 model = imageModel.imageUrl,
                 contentDescription = null,
@@ -149,6 +152,11 @@ fun PictureGrid(images: List<ImageModel>) {
     }
 }
 
+/**
+ * The PreviewProfileScreen composable function provides a preview of the ProfileScreen.
+ *
+ * @param showBackground Boolean flag indicating whether to show the background.
+ */
 @Preview
 @Composable
 fun PreviewProfileScreen(showBackground: Boolean = true) {

@@ -12,10 +12,21 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import ca.uqac.friendschallenge.navigation.AppScreen
 import ca.uqac.friendschallenge.R
 
+/**
+ * The BottomNavigationBar composable function displays a bottom navigation bar with three items:
+ * Home, Friends, and Profile. It allows users to navigate between different screens in the application.
+ *
+ * @param currentScreen The current screen being displayed.
+ * @param onHomeButtonClicked Callback function to be invoked when the Home button is clicked.
+ * @param onFriendsButtonClicked Callback function to be invoked when the Friends button is clicked.
+ * @param onProfileButtonClicked Callback function to be invoked when the Profile button is clicked.
+ * @param modifier The modifier to be applied to the root layout.
+ */
 @Composable
 fun BottomNavigationBar(
     currentScreen: AppScreen,
@@ -63,4 +74,19 @@ fun BottomNavigationBar(
             onClick = onProfileButtonClicked
         )
     }
+}
+
+/**
+ * Preview function for the BottomNavigationBar composable.
+ * Displays a preview of the bottom navigation bar with sample data.
+ */
+@Composable
+@Preview
+fun BottomNavigationBarPreview() {
+    BottomNavigationBar(
+        currentScreen = AppScreen.Home,
+        onHomeButtonClicked = {},
+        onFriendsButtonClicked = {},
+        onProfileButtonClicked = {}
+    )
 }

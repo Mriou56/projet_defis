@@ -17,6 +17,14 @@ import androidx.compose.ui.unit.dp
 import ca.uqac.friendschallenge.model.UserModel
 import ca.uqac.friendschallenge.ui.theme.FriendsChallengeTheme
 
+/**
+ * The FriendSearchResultItem composable function displays a single friend search result item with the user's name
+ * and a button to add the user as a friend.
+ *
+ * @param user The user model containing the user's information.
+ * @param alreadyRequested Boolean indicating if a friend request has already been sent.
+ * @param onAddFriend Callback function to be invoked when the add friend button is clicked.
+ */
 @Composable
 fun FriendSearchResultItem(
     user: UserModel,
@@ -32,6 +40,7 @@ fun FriendSearchResultItem(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(text = user.username, style = MaterialTheme.typography.bodyLarge)
+            // Button to add the user as a friend
             Button(
                 onClick = { onAddFriend(user) },
                 enabled = !alreadyRequested
@@ -43,6 +52,9 @@ fun FriendSearchResultItem(
     }
 }
 
+/**
+ * Preview function for the FriendSearchResultItem composable.
+ */
 @Preview(showBackground = true)
 @Composable
 fun FriendSearchResultItemPreview() {

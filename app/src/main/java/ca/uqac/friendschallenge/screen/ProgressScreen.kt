@@ -12,12 +12,18 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import ca.uqac.friendschallenge.ui.theme.FriendsChallengeTheme
 
+/**
+ * The ProgressScreen composable function displays a loading screen with a circular progress indicator.
+ *
+ * @param modifier The modifier to be applied to the root layout.
+ */
 @Composable
 fun ProgressScreen(modifier: Modifier = Modifier) {
     Box(
         modifier = modifier
             .fillMaxSize()
     ){
+        // Centered circular loading indicator
         CircularProgressIndicator(
             color = MaterialTheme.colorScheme.inversePrimary,
             strokeWidth = 8.dp,

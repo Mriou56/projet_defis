@@ -24,6 +24,19 @@ import ca.uqac.friendschallenge.model.UserModel
 import ca.uqac.friendschallenge.ui.theme.FriendsChallengeTheme
 import com.google.firebase.Timestamp
 
+/**
+ * The FriendSearchBar composable function displays a search bar for searching friends in the application
+ * with their username.
+ *
+ * @param searchQuery The current search query entered by the user.
+ * @param isLoading Indicates whether the search results are being loaded.
+ * @param searchResults The list of search results to be displayed.
+ * @param friends The list of friends of the current user.
+ * @param errorMessage An optional error message to be displayed if an error occurs.
+ * @param currentUser The current user of the application.
+ * @param onSearchQueryChange Callback function to be invoked when the search query changes.
+ * @param onAddFriend Callback function to be invoked when a friend is added.
+ */
 @Composable
 fun FriendSearchBar(
     searchQuery: String,
@@ -73,6 +86,9 @@ fun FriendSearchBar(
     }
 }
 
+/**
+ * Preview function for the FriendSearchBar composable.
+ */
 @Preview(showBackground = true)
 @Composable
 fun FriendSearchBarPreview() {

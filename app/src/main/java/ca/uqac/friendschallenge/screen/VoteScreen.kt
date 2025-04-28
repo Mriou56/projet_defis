@@ -36,11 +36,22 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
 import ca.uqac.friendschallenge.utils.ToastUtils
 
+/**
+ * The VoteScreen composable function displays the voting screen for the weekly challenge.
+ *
+ * @param modifier The modifier to be applied to the root layout.
+ * @param currentUser The current user of the application.
+ */
 @Composable
 fun VoteScreen(modifier: Modifier = Modifier, currentUser: UserModel) {
+    // ViewModel instance to interact with the challenge data
     val viewModel: ChallengeViewModel = viewModel()
+
+    // UI states for rating slider and current participation index
     var rating by remember { mutableStateOf(5f) }
     var currentIndex by remember { mutableStateOf(0) }
+
+    // Observing ViewModel states
     val participations by viewModel.participationsOfFriends
     val challenge by viewModel.weeklyChallenge
     val isLoading by viewModel.isLoading
@@ -49,17 +60,19 @@ fun VoteScreen(modifier: Modifier = Modifier, currentUser: UserModel) {
 
     val context = LocalContext.current
 
+    // Fetch weekly challenge and voting status when screen is composed
     LaunchedEffect(Unit) {
         viewModel.fetchWeeklyChallenge()
         viewModel.checkIfUserVoted(currentUser.uid)
     }
 
+    // Fetch participations once challenge data is available
     LaunchedEffect(challenge) {
         if (challenge != null) {
             viewModel.fetchParticipationsOfFriends(challengeId = challenge!!.id, userId = currentUser.uid)
         }
     }
-
+    // Show toast if an error message appears
     LaunchedEffect(errorMessage) {
         if (!errorMessage.isNullOrEmpty()) {
             ToastUtils.show(context, errorMessage!!)
@@ -91,7 +104,7 @@ fun VoteScreen(modifier: Modifier = Modifier, currentUser: UserModel) {
                     modifier = Modifier.align(Alignment.CenterHorizontally)
                 )
             }
-
+            // Show the voting UI if a challenge exists and participations are available
             challenge != null && participations.isNotEmpty() -> {
                 val participation = participations[currentIndex]
 
@@ -139,6 +152,7 @@ fun VoteScreen(modifier: Modifier = Modifier, currentUser: UserModel) {
                     )
                 }
 
+                // Button to submit rating
                 Button(
                     onClick = {
                         viewModel.voteForImage(
@@ -169,6 +183,7 @@ fun VoteScreen(modifier: Modifier = Modifier, currentUser: UserModel) {
                 }
             }
 
+            // If no participation found
             challenge != null -> {
                 Text("Aucune participation d’amis à évaluer.")
             }

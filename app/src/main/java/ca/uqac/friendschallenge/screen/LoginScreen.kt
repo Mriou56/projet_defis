@@ -27,6 +27,14 @@ import androidx.compose.ui.unit.dp
 import ca.uqac.friendschallenge.R
 import ca.uqac.friendschallenge.ui.theme.FriendsChallengeTheme
 
+/**
+ * The LoginScreen composable function displays the login screen of the application.
+ *
+ * @param modifier The modifier to be applied to the root layout.
+ * @param onLoginButtonClicked Callback function to be invoked when the login button is clicked.
+ * @param onRegisterButtonClicked Callback function to be invoked when the register button is clicked.
+ * @param isLoginLoading Boolean flag indicating whether the login process is loading.
+ */
 @Composable
 fun LoginScreen(
     modifier: Modifier = Modifier,
@@ -34,6 +42,7 @@ fun LoginScreen(
     onRegisterButtonClicked: () -> Unit,
     isLoginLoading: Boolean = false,
 ) {
+    // State variables for username and password input fields
     var username by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
 
@@ -61,7 +70,7 @@ fun LoginScreen(
             value = password,
             onValueChange = { password = it },
             label = { Text(stringResource(id = R.string.password)) },
-            visualTransformation = PasswordVisualTransformation(),
+            visualTransformation = PasswordVisualTransformation(), // visual transformation for obscuring input
             singleLine = true
         )
 
@@ -92,7 +101,10 @@ fun LoginScreen(
     }
 }
 
-
+/**
+ * Preview function for the LoginScreen.
+ * This function is used to display a preview of the LoginScreen in the Android Studio design editor.
+ */
 @Preview(showBackground = true)
 @Composable
 fun PreviewLoginScreen() {

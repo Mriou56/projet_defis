@@ -14,8 +14,6 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Button
@@ -45,12 +43,19 @@ import ca.uqac.friendschallenge.viewmodel.ChallengeViewModel
 import coil.compose.AsyncImage
 import kotlinx.coroutines.launch
 
-
+/**
+ * The HomeScreen composable function displays the home screen of the application during the week.
+ * It shows the weekly challenge and allows the user to participate by taking a picture.
+ *
+ * @param modifier The modifier to be applied to the root layout.
+ * @param userModel The user model representing the current user.
+ */
 @Composable
 fun HomeScreen(
     modifier: Modifier = Modifier,
     userModel: UserModel
 ) {
+    // Initialize ViewModel and observe its states
     val viewModel: ChallengeViewModel = viewModel()
     val weeklyDefi by viewModel.weeklyChallenge
     val isParticipating by viewModel.isParticipating
@@ -62,12 +67,14 @@ fun HomeScreen(
     val scope = rememberCoroutineScope()
     var hasCameraPermission by remember { mutableStateOf(false) }
 
+    // Check for camera permission when the composable is first launched
     LaunchedEffect(Unit) {
         hasCameraPermission = ContextCompat.checkSelfPermission(
             context, Manifest.permission.CAMERA
         ) == PackageManager.PERMISSION_GRANTED
     }
 
+    // Display error message as a toast when an error occurs
     LaunchedEffect(errorMessage) {
         if (!errorMessage.isNullOrEmpty()) {
             ToastUtils.show(context, errorMessage!!)
@@ -76,12 +83,14 @@ fun HomeScreen(
 
     var bitmap by remember { mutableStateOf<Bitmap?>(null) }
 
+    // Launcher to take a picture using the device camera
     val takePicture = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.TakePicturePreview()
     ) { result: Bitmap? ->
         bitmap = result
     }
 
+    // Launcher to request camera permission if not already granted
     val requestPermissionLauncher = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) {
         isGranted: Boolean -> hasCameraPermission = isGranted
 
@@ -98,10 +107,10 @@ fun HomeScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(bottom = 72.dp, top = 32.dp)
-                .verticalScroll(rememberScrollState()),
+                ,
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-
+            // Section displaying the challenge title or loading/error messages
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -124,7 +133,7 @@ fun HomeScreen(
                     }
                 }
             }
-
+            // Section displaying the captured image or challenge image
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier
@@ -137,19 +146,21 @@ fun HomeScreen(
                                 .fillMaxHeight(0.9f)
                         ) {
                             if (urlImage != null && isParticipating) {
+                                // Display image from URL if the user already participated
                                 AsyncImage(
                                     model = urlImage,
                                     contentDescription = "Mon image",
                                     modifier = Modifier.fillMaxSize()
                                 )
                             } else {
+                                // Display the captured image
                                 Image(
                                     bitmap = bitmap!!.asImageBitmap(),
                                     contentDescription = "Captured photo",
                                     modifier = Modifier.fillMaxSize()
                                 )
                             }
-
+                            // Floating button to remove the selected image
                             SmallFloatingActionButton(
                                 onClick = {
                                     bitmap = null
@@ -167,9 +178,11 @@ fun HomeScreen(
                         }
                     }
                 } else {
+                    // Add some vertical space if no image is available
                     Spacer(modifier = Modifier.fillMaxHeight(0.5f))
                 }
 
+                // Buttons for participating or validating the challenge
                 if (bitmap == null && !isParticipating) {
                     AddChallengeButton(
                         onClick = {
@@ -186,6 +199,7 @@ fun HomeScreen(
                             .padding(horizontal = 32.dp)
                     )
                 } else if (!isParticipating) {
+                    // Button to upload the challenge photo
                     Button(
                         onClick = {
                             if (weeklyDefi != null && bitmap != null) {
@@ -210,6 +224,12 @@ fun HomeScreen(
     }
 }
 
+/**
+ * A button to add a challenge.
+ *
+ * @param onClick The callback to be invoked when the button is clicked.
+ * @param modifier The modifier to be applied to the button.
+ */
 @Composable
 fun AddChallengeButton(onClick: () -> Unit, modifier: Modifier = Modifier) {
     Button(
@@ -224,7 +244,12 @@ fun AddChallengeButton(onClick: () -> Unit, modifier: Modifier = Modifier) {
     }
 }
 
-
+/**
+ * A preview of the HomeScreen composable function.
+ *
+ * @Preview
+ * @Composable
+ */
 @Composable
 @Preview
 fun HomeScreenPreview() {

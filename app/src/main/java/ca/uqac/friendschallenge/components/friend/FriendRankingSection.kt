@@ -19,6 +19,12 @@ import ca.uqac.friendschallenge.model.FriendStatus
 import ca.uqac.friendschallenge.ui.theme.FriendsChallengeTheme
 import com.google.firebase.Timestamp
 
+/**
+ * The FriendRankingSection composable function displays the ranking of the current user friends
+ * in the application.
+ *
+ * @param friends The list of friends of the current user to be displayed in the ranking section.
+ */
 @Composable
 fun FriendRankingSection(friends: List<FriendModel>) {
     Column {
@@ -31,6 +37,7 @@ fun FriendRankingSection(friends: List<FriendModel>) {
                 .padding(vertical = 8.dp)
         )
 
+        // We only filter accepted friends, we sort them by decreasing score
         friends.filter { it.status == FriendStatus.ACCEPTED }
             .sortedByDescending { it.totalScore }
             .forEachIndexed { index, friend ->
@@ -48,6 +55,9 @@ fun FriendRankingSection(friends: List<FriendModel>) {
     }
 }
 
+/**
+ * Preview function for the FriendRankingSection composable.
+ */
 @Preview(showBackground = true)
 @Composable
 fun FriendRankingSectionPreview() {

@@ -16,9 +16,17 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import ca.uqac.friendschallenge.R
 
+/**
+ * The TopBar composable function displays the top app bar with a logo and a back button.
+ *
+ * @param canNavigateBack Indicates whether the back button should be displayed.
+ * @param navigateUp Callback function to be invoked when the back button is clicked.
+ * @param modifier The modifier to be applied to the root layout.
+ */
 @Composable
 fun TopBar(
     canNavigateBack: Boolean,
@@ -56,5 +64,18 @@ fun TopBar(
                 }
             }
         }
+    )
+}
+
+/**
+ * Preview function for the TopBar composable.
+ * Displays the TopBar with a back button.
+ */
+@Composable
+@Preview
+fun TopBarPreview() {
+    TopBar(
+        canNavigateBack = true,
+        navigateUp = {}
     )
 }

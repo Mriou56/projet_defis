@@ -31,6 +31,14 @@ import ca.uqac.friendschallenge.R
 import ca.uqac.friendschallenge.ui.theme.FriendsChallengeTheme
 import ca.uqac.friendschallenge.utils.ToastUtils
 
+/**
+ * The RegisterScreen composable function displays the registration screen of the application.
+ *
+ * @param modifier The modifier to be applied to the root layout.
+ * @param onLoginButtonClicked Callback function to be invoked when the login button is clicked.
+ * @param onRegisterButtonClicked Callback function to be invoked when the register button is clicked.
+ * @param isRegisterLoading Boolean flag indicating whether the registration process is loading.
+ */
 @Composable
 fun RegisterScreen(
     modifier: Modifier = Modifier,
@@ -38,6 +46,7 @@ fun RegisterScreen(
     onRegisterButtonClicked: (email: String, password: String, username: String) -> Unit,
     isRegisterLoading: Boolean = false,
 ) {
+    // State variables for the registration form inputs
     var username by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
@@ -78,7 +87,7 @@ fun RegisterScreen(
             value = password,
             onValueChange = { password = it },
             label = { Text(stringResource(id = R.string.password)) },
-            visualTransformation = PasswordVisualTransformation(),
+            visualTransformation = PasswordVisualTransformation(), // visual transformation for obscuring input
             singleLine = true
         )
 
@@ -88,12 +97,13 @@ fun RegisterScreen(
             value = confirmPassword,
             onValueChange = { confirmPassword = it },
             label = { Text(stringResource(id = R.string.confirm_password)) },
-            visualTransformation = PasswordVisualTransformation(),
+            visualTransformation = PasswordVisualTransformation(), // visual transformation for obscuring input
             singleLine = true
         )
 
         Spacer(modifier = Modifier.height(16.dp))
 
+        // Register button with loading indicator
         Button(
             onClick = {
                 if (password == confirmPassword){
@@ -125,7 +135,10 @@ fun RegisterScreen(
     }
 }
 
-
+/**
+ * Preview function for the RegisterScreen.
+ * This function is used to display a preview of the RegisterScreen in the Android Studio design editor.
+ */
 @Preview(showBackground = true)
 @Composable
 fun PreviewRegisterScreen() {

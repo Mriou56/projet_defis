@@ -22,12 +22,19 @@ import ca.uqac.friendschallenge.ui.theme.inversePrimaryLight
 import ca.uqac.friendschallenge.viewmodel.FriendScreenViewModel
 import com.google.firebase.Timestamp
 
-
+/**
+ * The LeaderboardScreen composable function displays the leaderboard screen of one week.
+ *
+ * @param currentUser The current user of the application.
+ * @param modifier The modifier to be applied to the root layout.
+ */
 @Composable
 fun LeaderboardScreen(currentUser: UserModel, modifier: Modifier = Modifier) {
+    // ViewModel for accessing the list of friends
     val viewModel: FriendScreenViewModel = viewModel()
     val friends by viewModel.friends
 
+    // Combine friends and current user into a single list, then sort them by score descending
     val allPlayers = (friends.map {
         PlayerScore(name = it.friendName, scoreSemaine = it.scoreWeek)
     } + PlayerScore(name = currentUser.username, scoreSemaine = currentUser.scoreWeek))
@@ -49,6 +56,7 @@ fun LeaderboardScreen(currentUser: UserModel, modifier: Modifier = Modifier) {
                 .background(color = inversePrimaryLight, shape = RoundedCornerShape(8.dp))
         )
 
+        // Podium for the top 3 players
         Column(
             modifier = Modifier.fillMaxWidth(),
             horizontalAlignment = Alignment.CenterHorizontally
@@ -74,6 +82,7 @@ fun LeaderboardScreen(currentUser: UserModel, modifier: Modifier = Modifier) {
 
         Spacer(modifier = Modifier.height(16.dp))
 
+        // List of other players after top 3
         Column(
             modifier = Modifier
                 .padding(horizontal = 16.dp)
@@ -93,6 +102,7 @@ fun LeaderboardScreen(currentUser: UserModel, modifier: Modifier = Modifier) {
 
         Spacer(modifier = Modifier.weight(1f))
 
+        // Display the current user's position at the bottom
         Text(
             text = "Votre position: ${positionUser}ème - ${currentUser.scoreWeek.toInt()} pts",
             style = MaterialTheme.typography.bodyLarge,
@@ -107,6 +117,13 @@ fun LeaderboardScreen(currentUser: UserModel, modifier: Modifier = Modifier) {
     }
 }
 
+/**
+ * The LeaderboardPodiumPlayer composable function displays a player's score on the leaderboard podium.
+ *
+ * @param medal The medal emoji representing the player's rank.
+ * @param player The PlayerScore object containing the player's name and score.
+ * @param isFirst Boolean indicating if the player is in first place.
+ */
 @Composable
 fun LeaderboardPodiumPlayer(medal: String, player: PlayerScore, isFirst: Boolean = false) {
     val boxHeight = if (isFirst) 120.dp else 90.dp
@@ -130,6 +147,11 @@ fun LeaderboardPodiumPlayer(medal: String, player: PlayerScore, isFirst: Boolean
     }
 }
 
+/**
+ * The LeaderboardScreenPreview function provides a preview of the LeaderboardScreen composable.
+ *
+ * @param currentUser The current user of the application.
+ */
 @Composable
 @Preview(showBackground = true)
 fun LeaderboardScreenPreview() {
