@@ -8,6 +8,11 @@ import ca.uqac.friendschallenge.model.UserModel
 import ca.uqac.friendschallenge.utils.FirebaseHelper
 import com.google.firebase.Timestamp
 
+/**
+ * ViewModel for managing the friend-related data and operations.
+ *
+ * @property firebaseHelper An instance of FirebaseHelper to interact with Firebase services.
+ */
 class FriendScreenViewModel : ViewModel() {
 
     private val firebaseHelper = FirebaseHelper()
@@ -36,6 +41,9 @@ class FriendScreenViewModel : ViewModel() {
         fetchFriends()
     }
 
+    /**
+     * Fetches the list of friends from Firebase and updates the UI state.
+     */
     private fun fetchFriends() {
         _isLoading.value = true
         _errorMessage.value = null
@@ -52,6 +60,14 @@ class FriendScreenViewModel : ViewModel() {
         }
     }
 
+    /**
+     * Handles the search query input by the user.
+     * If the query length is greater than 2 characters and at least 500ms have passed since the last search,
+     * it performs a search for users by username.
+     *
+     * @param query The search query input by the user.
+     * @param currentUser The current user model.
+     */
     fun onSearchQueryChange(query: String, currentUser: UserModel) {
         _searchQuery.value = query
 
@@ -66,6 +82,12 @@ class FriendScreenViewModel : ViewModel() {
         }
     }
 
+    /**
+     * Performs a search for users by username.
+     * Updates the search results and handles any errors that occur during the search.
+     *
+     * @param currentUser The current user model.
+     */
     private fun performSearch(currentUser: UserModel) {
         lastSearchTime = System.currentTimeMillis()
         _isLoading.value = true
@@ -83,6 +105,13 @@ class FriendScreenViewModel : ViewModel() {
         }
     }
 
+    /**
+     * Sends a friend request to the specified user.
+     * Updates the UI state based on the result of the operation.
+     *
+     * @param friend The user to send a friend request to.
+     * @param currentUser The current user model.
+     */
     fun sendFriendRequest(friend: UserModel, currentUser: UserModel) {
         val senderModel = FriendModel(
             friend.uid, friend.username, FriendStatus.PENDING, currentUser.uid, Timestamp.now(), 0.0, 0.0
@@ -101,6 +130,13 @@ class FriendScreenViewModel : ViewModel() {
         }
     }
 
+    /**
+     * Accepts a friend request from the specified user.
+     * Updates the UI state based on the result of the operation.
+     *
+     * @param friend The friend model representing the request to accept.
+     * @param currentUser The current user model.
+     */
     fun acceptFriendRequest(friend: FriendModel, currentUser: UserModel) {
         val senderModel = friend.copy(status = FriendStatus.ACCEPTED, createdAt = Timestamp.now())
         val receiverModel = FriendModel(
@@ -117,6 +153,13 @@ class FriendScreenViewModel : ViewModel() {
         }
     }
 
+    /**
+     * Rejects a friend request from the specified user.
+     * Updates the UI state based on the result of the operation.
+     *
+     * @param friend The friend model representing the request to reject.
+     * @param currentUser The current user model.
+     */
     fun rejectFriendRequest(friend: FriendModel, currentUser: UserModel) {
         val senderModel = friend.copy(status = FriendStatus.REJECTED, createdAt = Timestamp.now())
         val receiverModel = FriendModel(

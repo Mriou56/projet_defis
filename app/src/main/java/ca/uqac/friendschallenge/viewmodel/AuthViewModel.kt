@@ -8,6 +8,11 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 
+/**
+ * ViewModel class for managing authentication state and user data.
+ *
+ * @property firebaseHelper An instance of FirebaseHelper to interact with Firebase services.
+ */
 class AuthViewModel : ViewModel() {
 
     private val firebaseHelper = FirebaseHelper()
@@ -22,6 +27,11 @@ class AuthViewModel : ViewModel() {
         checkAuthStatus()
     }
 
+    /**
+     * Checks the authentication status of the user.
+     * If the user is authenticated, fetches the user data.
+     * If not, sets the authentication state to false.
+     */
     private fun checkAuthStatus() {
         firebaseHelper.checkAuthStatus { userId ->
             _isLoading.value = false
@@ -33,6 +43,14 @@ class AuthViewModel : ViewModel() {
         }
     }
 
+    /**
+     * Logs in the user with the provided email and password.
+     * If successful, fetches the user data.
+     * If failed, updates the authentication state with an error message.
+     *
+     * @param email The email of the user.
+     * @param password The password of the user.
+     */
     fun login(email: String, password: String) {
         if (email.isBlank() || password.isBlank()) return
 
@@ -47,6 +65,15 @@ class AuthViewModel : ViewModel() {
         }
     }
 
+    /**
+     * Registers a new user with the provided email, password, and username.
+     * If successful, saves the user data in Firestore.
+     * If failed, updates the authentication state with an error message.
+     *
+     * @param email The email of the user.
+     * @param password The password of the user.
+     * @param username The username of the user.
+     */
     fun register(email: String, password: String, username: String) {
         if (email.isBlank() || password.isBlank() || username.isBlank()) {
             handleError("Please fill in all the fields")
@@ -64,11 +91,21 @@ class AuthViewModel : ViewModel() {
         }
     }
 
+    /**
+     * Logs out the user and updates the authentication state.
+     */
     fun logout() {
         firebaseHelper.logout()
         _authState.update { it.copy(isAuthenticated = false, userModel = null) }
     }
 
+    /**
+     * Fetches the user data from Firestore using the provided user ID.
+     * If successful, updates the authentication state with the user data.
+     * If failed, updates the authentication state with an error message.
+     *
+     * @param userId The ID of the user to fetch.
+     */
     private fun fetchUser(userId: String) {
         firebaseHelper.fetchUser(userId) { result ->
             result.onSuccess { user ->
@@ -87,6 +124,13 @@ class AuthViewModel : ViewModel() {
         }
     }
 
+    /**
+     * Saves the user data in Firestore.
+     * If successful, updates the authentication state with the user data.
+     * If failed, updates the authentication state with an error message.
+     *
+     * @param user The user data to save.
+     */
     private fun saveUserInFirestore(user: UserModel) {
         firebaseHelper.saveUser(user) { result ->
             result.onSuccess {
@@ -105,6 +149,11 @@ class AuthViewModel : ViewModel() {
         }
     }
 
+    /**
+     * Handles errors by updating the authentication state with an error message.
+     *
+     * @param message The error message to display.
+     */
     private fun handleError(message: String?) {
         _authState.update {
             it.copy(

@@ -11,6 +11,11 @@ import ca.uqac.friendschallenge.model.ParticipationModel
 import ca.uqac.friendschallenge.model.UserModel
 import ca.uqac.friendschallenge.utils.FirebaseHelper
 
+/**
+ * ViewModel for managing the challenge-related data and operations.
+ *
+ * @property firebaseHelper An instance of FirebaseHelper to interact with Firebase services.
+ */
 class ChallengeViewModel : ViewModel(){
     private val firebaseHelper = FirebaseHelper()
     val participationsOfFriends = mutableStateOf<List<ParticipationModel>>(emptyList())
@@ -39,6 +44,9 @@ class ChallengeViewModel : ViewModel(){
     }
 
 
+    /**
+     * Fetches the weekly challenge from Firebase and updates the UI state.
+     */
     fun fetchWeeklyChallenge() {
         _isLoading.value = true
         firebaseHelper.getWeeklyChallenge { result ->
@@ -56,6 +64,11 @@ class ChallengeViewModel : ViewModel(){
         }
     }
 
+    /**
+     * Checks if the user is participating in the challenge.
+     *
+     * @param challengeId The ID of the challenge to check participation for.
+     */
     fun checkIfParticipating(challengeId: String) {
         _isLoading.value = true
         firebaseHelper.fetchUserImages { result ->
@@ -72,7 +85,13 @@ class ChallengeViewModel : ViewModel(){
         }
     }
 
-
+    /**
+     * Submits a participation for the challenge.
+     *
+     * @param bitmap The bitmap image to submit.
+     * @param challenge The challenge to participate in.
+     * @param user The user participating in the challenge.
+     */
     fun participatingToChallenge(bitmap: Bitmap, challenge: Challenge, user: UserModel) {
         firebaseHelper.submitChallengeParticipation(
             bitmap = bitmap,
@@ -90,6 +109,11 @@ class ChallengeViewModel : ViewModel(){
         }
     }
 
+    /**
+     * Deletes the participation for the challenge.
+     *
+     * @param challengeId The ID of the challenge to delete participation for.
+     */
     fun deleteParticipation(challengeId: String) {
         _isLoading.value = true
         firebaseHelper.deleteParticipation(challengeId) { result ->
@@ -105,6 +129,15 @@ class ChallengeViewModel : ViewModel(){
         }
     }
 
+    /**
+     * Votes for an image in the challenge.
+     *
+     * @param rating The rating to give to the image.
+     * @param challengeId The ID of the challenge.
+     * @param participationId The ID of the participation.
+     * @param onSuccess Callback function to be called on success.
+     * @param onError Callback function to be called on error.
+     */
     fun voteForImage(
         rating: Float,
         challengeId: String,
@@ -122,6 +155,12 @@ class ChallengeViewModel : ViewModel(){
         }
     }
 
+    /**
+     * Fetches the participations of friends for the challenge.
+     *
+     * @param challengeId The ID of the challenge.
+     * @param userId The ID of the user.
+     */
     fun fetchParticipationsOfFriends(challengeId: String, userId: String) {
         firebaseHelper.getParticipationsOfFriends(challengeId, userId) { result ->
             result.onSuccess {
@@ -132,6 +171,11 @@ class ChallengeViewModel : ViewModel(){
         }
     }
 
+    /**
+     * Checks if the user has already voted for the challenge.
+     *
+     * @param userId The ID of the user.
+     */
     fun checkIfUserVoted(userId: String) {
         _hasVoted.value = null
         firebaseHelper.checkIfUserVoted(userId) { voted ->
@@ -139,6 +183,11 @@ class ChallengeViewModel : ViewModel(){
         }
     }
 
+    /**
+     * Marks the voting as completed for the user.
+     *
+     * @param userId The ID of the user.
+     */
     fun markVotingCompleted(userId: String) {
         firebaseHelper.markVotingCompleted(userId) { result ->
             result.onSuccess {

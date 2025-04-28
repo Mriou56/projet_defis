@@ -13,6 +13,13 @@ import ca.uqac.friendschallenge.components.TopBar
 import ca.uqac.friendschallenge.viewmodel.AuthViewModel
 import ca.uqac.friendschallenge.viewmodel.HomeScreenViewModel
 
+/**
+ * AppNavigation is a composable function that sets up the main navigation for the application.
+ * It includes a top bar and bottom navigation bar, and handles navigation between different screens.
+ *
+ * @param authViewModel The ViewModel responsible for authentication logic.
+ * @param homeViewModel The ViewModel responsible for home screen logic.
+ */
 @Composable
 fun AppNavigation(authViewModel: AuthViewModel = viewModel(), homeViewModel: HomeScreenViewModel = viewModel()) {
     val navController = rememberNavController()
@@ -31,6 +38,7 @@ fun AppNavigation(authViewModel: AuthViewModel = viewModel(), homeViewModel: Hom
     HandleAuthErrors(authState.errorMessage, context)
 
     Scaffold(
+        // Displays the TopBar only if necessary (depending on screen and user connection)
         topBar = {
             if (shouldShowNavigationBars(currentScreen, authState.isAuthenticated)) {
                 TopBar(
@@ -39,6 +47,7 @@ fun AppNavigation(authViewModel: AuthViewModel = viewModel(), homeViewModel: Hom
                 )
             }
         },
+        // Displays the BottomNavigationBar only if necessary (depending on screen and user connection)
         bottomBar = {
             if (shouldShowNavigationBars(currentScreen, authState.isAuthenticated)) {
                 BottomNavigationBar(
@@ -60,6 +69,7 @@ fun AppNavigation(authViewModel: AuthViewModel = viewModel(), homeViewModel: Hom
             }
         }
     ) { innerPadding ->
+        // The content of the screen is displayed here
         AppNavHost(
             navController = navController,
             authViewModel = authViewModel,

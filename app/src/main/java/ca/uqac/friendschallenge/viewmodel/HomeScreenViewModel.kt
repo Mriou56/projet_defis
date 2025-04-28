@@ -5,6 +5,11 @@ import ca.uqac.friendschallenge.utils.FirebaseHelper
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
+/**
+ * ViewModel class for managing the home screen state.
+ *
+ * @property firebaseHelper An instance of FirebaseHelper to interact with Firebase services.
+ */
 class HomeScreenViewModel: ViewModel() {
 
     private val firebaseHelper = FirebaseHelper()
@@ -23,6 +28,10 @@ class HomeScreenViewModel: ViewModel() {
         checkIfTimeToVote()
     }
 
+    /**
+     * Checks if it's time to vote by comparing the current time with the last checked time.
+     * If the delay has passed, it fetches the voting status from Firebase.
+     */
     fun checkIfTimeToVote() {
         if (System.currentTimeMillis() - lastCheckedTime < delay) {
             _isTimeToVote.value = lastIsTimeToVote

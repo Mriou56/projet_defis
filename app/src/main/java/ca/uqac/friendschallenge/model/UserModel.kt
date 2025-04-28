@@ -1,5 +1,6 @@
 package ca.uqac.friendschallenge.model
 
+// This data class represents a user in the application.
 data class UserModel(
     val uid: String,
     val username: String,

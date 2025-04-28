@@ -6,6 +6,11 @@ import androidx.lifecycle.ViewModel
 import ca.uqac.friendschallenge.model.ImageModel
 import ca.uqac.friendschallenge.utils.FirebaseHelper
 
+/**
+ * ViewModel for managing the profile-related data and operations.
+ *
+ * @property firebaseHelper An instance of FirebaseHelper to interact with Firebase services.
+ */
 class ProfileViewModel : ViewModel()  {
     private val firebaseHelper = FirebaseHelper()
 
@@ -18,6 +23,9 @@ class ProfileViewModel : ViewModel()  {
     private val _errorMessage = mutableStateOf<String?>(null)
     val errorMessage: State<String?> get() = _errorMessage
 
+    /**
+     * Fetches the images of the user from Firebase and updates the UI state.
+     */
     fun loadImages(){
         _isLoading.value = true
         _errorMessage.value = null
