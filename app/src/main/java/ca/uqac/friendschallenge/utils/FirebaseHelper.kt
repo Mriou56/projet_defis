@@ -16,17 +16,32 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 import java.io.ByteArrayOutputStream
 
+/**
+ * Helper class for Firebase operations.
+ */
 class FirebaseHelper() {
 
     private val auth: FirebaseAuth = FirebaseAuth.getInstance()
     private val firestore: FirebaseFirestore = FirebaseFirestore.getInstance()
     private val storage = FirebaseStorage.getInstance()
 
+    /**
+     * Checks the authentication status of the user.
+     *
+     * @param callback A callback function to handle the result.
+     */
     fun checkAuthStatus(callback: (String?) -> Unit) {
         val currentUser = auth.currentUser
         callback(currentUser?.uid)
     }
 
+    /**
+     * Logs in the user with the provided email and password.
+     *
+     * @param email The email of the user.
+     * @param password The password of the user.
+     * @param callback A callback function to handle the result.
+     */
     fun login(email: String, password: String, callback: (Result<String>) -> Unit) {
         auth.signInWithEmailAndPassword(email, password)
             .addOnCompleteListener { task ->
@@ -38,6 +53,14 @@ class FirebaseHelper() {
             }
     }
 
+    /**
+     * Registers a new user with the provided email, password, and username.
+     *
+     * @param email The email of the user.
+     * @param password The password of the user.
+     * @param username The username of the user.
+     * @param callback A callback function to handle the result.
+     */
     fun register(email: String, password: String, username: String, callback: (Result<UserModel>) -> Unit) {
         auth.createUserWithEmailAndPassword(email, password)
             .addOnCompleteListener { task ->
@@ -50,10 +73,19 @@ class FirebaseHelper() {
             }
     }
 
+    /**
+     * Logs out the current user.
+     */
     fun logout() {
         auth.signOut()
     }
 
+    /**
+     * Fetches the user data from Firestore.
+     *
+     * @param userId The ID of the user.
+     * @param callback A callback function to handle the result.
+     */
     fun fetchUser(userId: String, callback: (Result<UserModel>) -> Unit) {
         firestore.collection("users").document(userId)
             .get()
@@ -73,6 +105,11 @@ class FirebaseHelper() {
             }
     }
 
+    /**
+     * Fetches the list of friends for the current user.
+     *
+     * @param callback A callback function to handle the result.
+     */
     fun fetchUserFriends(callback: (Result<List<FriendModel>>) -> Unit) {
         val userId = auth.currentUser?.uid ?: return
 
@@ -92,6 +129,12 @@ class FirebaseHelper() {
             }
     }
 
+    /**
+     * Saves the user data to Firestore.
+     *
+     * @param user The user data to save.
+     * @param callback A callback function to handle the result.
+     */
     fun saveUser(user: UserModel, callback: (Result<Unit>) -> Unit) {
         firestore.collection("users").document(user.uid)
             .set(user)
@@ -104,6 +147,12 @@ class FirebaseHelper() {
             }
     }
 
+    /**
+     * Searches for users by username.
+     *
+     * @param query The search query.
+     * @param callback A callback function to handle the result.
+     */
     fun searchUsersByUsername(query: String, callback: (Result<List<UserModel>>) -> Unit) {
         firestore.collection("users")
             .whereGreaterThanOrEqualTo("username", query)
@@ -118,9 +167,26 @@ class FirebaseHelper() {
             }
     }
 
+    /**
+     * Sends a friend request to another user.
+     *
+     * @param userId The ID of the user sending the request.
+     * @param friendId The ID of the user receiving the request.
+     * @param friendModel The friend model data.
+     * @param callback A callback function to handle the result.
+     */
     private fun userFriendDoc(userId: String, friendId: String) =
         firestore.collection("users").document(userId).collection("friends").document(friendId)
 
+    /**
+     * Performs a friend operation (add or remove).
+     *
+     * @param user1Id The ID of the first user.
+     * @param user2Id The ID of the second user.
+     * @param user1Model The friend model data for the first user.
+     * @param user2Model The friend model data for the second user.
+     * @param callback A callback function to handle the result.
+     */
     fun performFriendOperation(
         user1Id: String,
         user2Id: String,
@@ -147,6 +213,11 @@ class FirebaseHelper() {
         }
     }
 
+    /**
+     * Checks if it's time to vote.
+     *
+     * @param callback A callback function to handle the result.
+     */
     fun isTimeToVote(callback: (Boolean) -> Unit) {
         firestore.collection("appsettings").document("settings")
             .get()
@@ -160,6 +231,11 @@ class FirebaseHelper() {
             }
     }
 
+    /**
+     * Fetches the weekly challenge from Firestore.
+     *
+     * @param callback A callback function to handle the result.
+     */
     fun getWeeklyChallenge(callback: (Result<Challenge>) -> Unit) {
         firestore.collection("challenges")
             .whereEqualTo("status", ChallengeStatus.WEEKLY.name)
@@ -183,6 +259,14 @@ class FirebaseHelper() {
             }
     }
 
+    /**
+     * Submits a challenge participation with an image.
+     *
+     * @param bitmap The image bitmap to upload.
+     * @param challenge The challenge data.
+     * @param user The user data.
+     * @param callback A callback function to handle the result.
+     */
     fun submitChallengeParticipation(bitmap: Bitmap, challenge: Challenge, user: UserModel, callback: (Result<String>) -> Unit) {
         val userId = auth.currentUser?.uid ?: return
 
@@ -208,6 +292,7 @@ class FirebaseHelper() {
                     "username" to user.username,
                 )
 
+                // Create a new participation document for the challenge
                 firestore.collection("challenges").document(challenge.id).collection("participation")
                     .document(userId)
                     .set(data)
@@ -239,6 +324,12 @@ class FirebaseHelper() {
             .addOnFailureListener { callback(Result.failure(it)) }
     }
 
+    /**
+     * Deletes a participation from a challenge.
+     *
+     * @param challengeId The ID of the challenge.
+     * @param callback A callback function to handle the result.
+     */
     fun deleteParticipation(challengeId: String, callback: (Result<Unit>) -> Unit) {
         val userId = auth.currentUser?.uid ?: return
 
@@ -261,6 +352,11 @@ class FirebaseHelper() {
             }
     }
 
+    /**
+     * Fetches the images of the user.
+     *
+     * @param callback A callback function to handle the result.
+     */
     fun fetchUserImages(callback: (Result<List<ImageModel>>) -> Unit) {
         val userId = auth.currentUser?.uid ?: return
 
@@ -288,6 +384,13 @@ class FirebaseHelper() {
             }
     }
 
+    /**
+     * Fetches the participations of friends in a challenge.
+     *
+     * @param challengeId The ID of the challenge.
+     * @param userId The ID of the user.
+     * @param callback A callback function to handle the result.
+     */
     fun getParticipationsOfFriends(
         challengeId: String,
         userId: String,
@@ -318,6 +421,14 @@ class FirebaseHelper() {
             }
     }
 
+    /**
+     * Votes for an image in a challenge.
+     *
+     * @param rating The rating to give to the image.
+     * @param challengeId The ID of the challenge.
+     * @param participationId The ID of the participation.
+     * @param callback A callback function to handle the result.
+     */
     fun voteForImage(
         rating: Float,
         challengeId: String,
@@ -344,6 +455,12 @@ class FirebaseHelper() {
 
     }
 
+    /**
+     * Marks the voting as completed for a user.
+     *
+     * @param userId The ID of the user.
+     * @param callback A callback function to handle the result.
+     */
     fun markVotingCompleted(userId: String, callback: (Result<Unit>) -> Unit) {
         val data = mapOf("voted" to true)
 
@@ -354,6 +471,12 @@ class FirebaseHelper() {
             .addOnFailureListener { exception -> callback(Result.failure(exception)) }
     }
 
+    /**
+     * Checks if the user has already voted.
+     *
+     * @param userId The ID of the user.
+     * @param onResult A callback function to handle the result.
+     */
     fun checkIfUserVoted(userId: String, onResult: (Boolean) -> Unit) {
         firestore.collection("users")
             .document(userId)
@@ -367,50 +490,35 @@ class FirebaseHelper() {
             }
     }
 
-    fun CalculateAverageAndUpdateScore(challengeId: String, participationId: String, userId: String) {
-        val votesRef = FirebaseFirestore.getInstance()
-            .collection("challenges")
-            .document(challengeId)
-            .collection("participations")
-            .document(participationId)
-            .collection("votes")
-
-        votesRef.get().addOnSuccessListener { snapshot ->
-            val notes = snapshot.documents.mapNotNull { it.getDouble("note") }
-            if (notes.isNotEmpty()) {
-                val moyenne = notes.average()
-
-
-                val userRef = FirebaseFirestore.getInstance().collection("users").document(userId)
-                userRef.get().addOnSuccessListener { document ->
-                    val currentScore = document.getDouble("score") ?: 0.0
-                    val newTotalScore = currentScore + moyenne
-                    val WeekScore = moyenne
-
-                    userRef.update(mapOf(
-                        "score" to newTotalScore,
-                        "scoreSemaine" to WeekScore,
-                    )).addOnSuccessListener {
-                        Log.d("ScoreUpdate", "Mise à jour réussie ! Total : $newTotalScore, Semaine : $WeekScore")
-                    }.addOnFailureListener { e ->
-                        Log.e("ScoreUpdate", "Erreur de mise à jour", e)
-                    }
-                }
-            } else {
-                Log.d("ScoreUpdate", "Aucune note trouvée pour cette participation.")
-            }
-        }.addOnFailureListener { e ->
-            Log.e("FirestoreError", "Impossible de récupérer les votes.", e)
-        }
-    }
-
-
+    /**
+     * Fetches the list of challenges from Firestore.
+     *
+     * @param callback A callback function to handle the result.
+     */
     private fun Map<String, Any?>.getString(key: String): String? = this[key] as? String
 
+    /**
+     * Fetches a double value from the map.
+     *
+     * @param key The key to fetch the value for.
+     * @return The double value associated with the key, or null if not found.
+     */
     private fun Map<String, Any?>.getTimestamp(key: String): Timestamp? = this[key] as? Timestamp
 
+    /**
+     * Fetches a double value from the map.
+     *
+     * @param key The key to fetch the value for.
+     * @return The double value associated with the key, or null if not found.
+     */
     private fun Map<String, Any?>.getBoolean(key: String): Boolean? = this[key] as? Boolean
 
+    /**
+     * Fetches a double value from the map.
+     *
+     * @param key The key to fetch the value for.
+     * @return The double value associated with the key, or null if not found.
+     */
     private fun com.google.firebase.firestore.DocumentSnapshot.toChallengeModel(): Challenge? {
         val data = data ?: return null
         val id = id
@@ -419,6 +527,11 @@ class FirebaseHelper() {
         return Challenge(id, title, status)
     }
 
+    /**
+     * Converts a Firestore document snapshot to a ParticipationModel.
+     *
+     * @return The ParticipationModel object, or null if conversion fails.
+     */
     private fun com.google.firebase.firestore.DocumentSnapshot.toParticipationModel(): ParticipationModel? {
         val data = data ?: return null
         val username = data.getString("username") ?: return null
@@ -426,6 +539,11 @@ class FirebaseHelper() {
         return ParticipationModel(id, username, imageUrl)
     }
 
+    /**
+     * Converts a Firestore document snapshot to a UserModel.
+     *
+     * @return The UserModel object, or null if conversion fails.
+     */
     private fun com.google.firebase.firestore.QueryDocumentSnapshot.toUserModel(): UserModel? {
         val data = data
         val userId = data.getString("uid") ?: return null
@@ -436,6 +554,11 @@ class FirebaseHelper() {
         return UserModel(userId, username, email, totalScore, scoreSemaine)
     }
 
+    /**
+     * Converts a Firestore document snapshot to a UserModel.
+     *
+     * @return The UserModel object, or null if conversion fails.
+     */
     private fun com.google.firebase.firestore.DocumentSnapshot.toUserModel(): UserModel? {
         val data = data ?: return null
         val uid = data.getString("uid") ?: return null
@@ -446,6 +569,11 @@ class FirebaseHelper() {
         return UserModel(uid, username, email, totalScore, scoreSemaine)
     }
 
+    /**
+     * Converts a Firestore document snapshot to a FriendModel.
+     *
+     * @return The FriendModel object, or null if conversion fails.
+     */
     private fun com.google.firebase.firestore.QueryDocumentSnapshot.toFriendModel(): FriendModel? {
         val data = data
         val friendId = data.getString("friendId") ?: return null
