@@ -1,12 +1,10 @@
 package ca.uqac.friendschallenge.viewmodel
 
 import android.graphics.Bitmap
-import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
-import ca.uqac.friendschallenge.model.Challenge
-import ca.uqac.friendschallenge.model.ChallengeStatus
+import ca.uqac.friendschallenge.model.ChallengeModel
 import ca.uqac.friendschallenge.model.ParticipationModel
 import ca.uqac.friendschallenge.model.UserModel
 import ca.uqac.friendschallenge.utils.FirebaseHelper
@@ -16,13 +14,13 @@ import ca.uqac.friendschallenge.utils.FirebaseHelper
  *
  * @property firebaseHelper An instance of FirebaseHelper to interact with Firebase services.
  */
-class ChallengeViewModel : ViewModel(){
+class ChallengeViewModel : ViewModel() {
     private val firebaseHelper = FirebaseHelper()
     val participationsOfFriends = mutableStateOf<List<ParticipationModel>>(emptyList())
 
     // Get the weekly defi and show it in the UI
-    private val _weeklyChallenge = mutableStateOf<Challenge?>(null)
-    val weeklyChallenge: State<Challenge?> get() = _weeklyChallenge
+    private val _weeklyChallenge = mutableStateOf<ChallengeModel?>(null)
+    val weeklyChallenge: State<ChallengeModel?> get() = _weeklyChallenge
 
     private val _isParticipating = mutableStateOf(false)
     val isParticipating: State<Boolean> get() = _isParticipating
@@ -92,7 +90,7 @@ class ChallengeViewModel : ViewModel(){
      * @param challenge The challenge to participate in.
      * @param user The user participating in the challenge.
      */
-    fun participatingToChallenge(bitmap: Bitmap, challenge: Challenge, user: UserModel) {
+    fun participatingToChallenge(bitmap: Bitmap, challenge: ChallengeModel, user: UserModel) {
         firebaseHelper.submitChallengeParticipation(
             bitmap = bitmap,
             challenge = challenge,

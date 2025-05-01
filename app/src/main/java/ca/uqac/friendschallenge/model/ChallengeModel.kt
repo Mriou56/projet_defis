@@ -1,7 +1,7 @@
 package ca.uqac.friendschallenge.model
 
 // This data class represents a challenge in the application.
-data class Challenge (
+data class ChallengeModel(
     val id: String,
     val title: String,
     val status: ChallengeStatus,

@@ -1,8 +1,7 @@
 package ca.uqac.friendschallenge.utils
 
 import android.graphics.Bitmap
-import android.util.Log
-import ca.uqac.friendschallenge.model.Challenge
+import ca.uqac.friendschallenge.model.ChallengeModel
 import ca.uqac.friendschallenge.model.ChallengeStatus
 import ca.uqac.friendschallenge.model.FriendModel
 import ca.uqac.friendschallenge.model.FriendStatus
@@ -11,7 +10,6 @@ import ca.uqac.friendschallenge.model.ParticipationModel
 import ca.uqac.friendschallenge.model.UserModel
 import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.FieldPath.documentId
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 import java.io.ByteArrayOutputStream
@@ -61,7 +59,12 @@ class FirebaseHelper() {
      * @param username The username of the user.
      * @param callback A callback function to handle the result.
      */
-    fun register(email: String, password: String, username: String, callback: (Result<UserModel>) -> Unit) {
+    fun register(
+        email: String,
+        password: String,
+        username: String,
+        callback: (Result<UserModel>) -> Unit
+    ) {
         auth.createUserWithEmailAndPassword(email, password)
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
@@ -204,7 +207,11 @@ class FirebaseHelper() {
                     if (task2.isSuccessful) {
                         callback(Result.success(Unit))
                     } else {
-                        callback(Result.failure(task2.exception ?: Exception("Erreur côté destinataire")))
+                        callback(
+                            Result.failure(
+                                task2.exception ?: Exception("Erreur côté destinataire")
+                            )
+                        )
                     }
                 }
             } else {
@@ -236,7 +243,7 @@ class FirebaseHelper() {
      *
      * @param callback A callback function to handle the result.
      */
-    fun getWeeklyChallenge(callback: (Result<Challenge>) -> Unit) {
+    fun getWeeklyChallenge(callback: (Result<ChallengeModel>) -> Unit) {
         firestore.collection("challenges")
             .whereEqualTo("status", ChallengeStatus.WEEKLY.name)
             .get()
@@ -267,7 +274,12 @@ class FirebaseHelper() {
      * @param user The user data.
      * @param callback A callback function to handle the result.
      */
-    fun submitChallengeParticipation(bitmap: Bitmap, challenge: Challenge, user: UserModel, callback: (Result<String>) -> Unit) {
+    fun submitChallengeParticipation(
+        bitmap: Bitmap,
+        challenge: ChallengeModel,
+        user: UserModel,
+        callback: (Result<String>) -> Unit
+    ) {
         val userId = auth.currentUser?.uid ?: return
 
         // Convert Bitmap to ByteArray
@@ -293,7 +305,8 @@ class FirebaseHelper() {
                 )
 
                 // Create a new participation document for the challenge
-                firestore.collection("challenges").document(challenge.id).collection("participation")
+                firestore.collection("challenges").document(challenge.id)
+                    .collection("participation")
                     .document(userId)
                     .set(data)
                     .addOnSuccessListener {
@@ -519,12 +532,12 @@ class FirebaseHelper() {
      * @param key The key to fetch the value for.
      * @return The double value associated with the key, or null if not found.
      */
-    private fun com.google.firebase.firestore.DocumentSnapshot.toChallengeModel(): Challenge? {
+    private fun com.google.firebase.firestore.DocumentSnapshot.toChallengeModel(): ChallengeModel? {
         val data = data ?: return null
         val id = id
         val title = data.getString("title") ?: return null
         val status = data.getString("status")?.let { ChallengeStatus.valueOf(it) } ?: return null
-        return Challenge(id, title, status)
+        return ChallengeModel(id, title, status)
     }
 
     /**
@@ -584,6 +597,14 @@ class FirebaseHelper() {
         val totalScore = getDouble("totalScore") ?: 0.0
         val scoreSemaine = getDouble("scoreWeek") ?: 0.0
 
-        return FriendModel(friendId, friendName, status, sentBy, createdAt, totalScore, scoreSemaine)
+        return FriendModel(
+            friendId,
+            friendName,
+            status,
+            sentBy,
+            createdAt,
+            totalScore,
+            scoreSemaine
+        )
     }
 }
